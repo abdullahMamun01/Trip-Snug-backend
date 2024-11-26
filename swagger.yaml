@@ -1,0 +1,1961 @@
+openapi: 3.0.0
+info:
+  title: Travel and Hotel Booking Platform API
+  description: >
+    A RESTful API for a travel and hotel booking platform, designed for efficient management of user accounts, hotel listings, real-time room availability, and bookings. The API supports secure authentication, dynamic filtering, payment processing, and integrates third-party services like Google Maps and Stripe for enhanced functionality. Built with scalability and performance in mind, the API provides endpoints for both customer and administrative operations.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@travelbookingplatform.com
+    url: https://travelbookingplatform.com/support
+  termsOfService: https://travelbookingplatform.com/terms
+servers:
+  - url: https://api.travelbookingplatform.com/v1
+    description: Production server
+  - url: https://sandbox.travelbookingplatform.com/v1
+    description: Sandbox server
+  - url: http://localhost:5500/api/v1
+    description: Local development server
+    
+tags:
+  - name: User
+    description: Endpoints for managing user accounts and profiles.
+  - name: Hotel
+    description: Endpoints for managing hotel listings and room availability.
+  - name: Booking
+    description: Endpoints for managing bookings and reservations.
+  - name: Review
+    description: Endpoints for Reveiw Hotel.
+  - name: Payment
+    description: Endpoints for handling payments and transactions via Stripe.
+  - name: Notification
+    description: Endpoints for Sent Notification to user.
+
+paths:
+  /auth/signup:
+    post:
+      summary: User signup
+      tags : [User]
+      description: This endpoint allows a user to create an account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "John"
+                lastName:
+                  type: string
+                  example: "Doe"
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "P@ssw0rd"
+                country:
+                  type: string
+                  example: United States
+                city: 
+                  type: string
+                  example: New York, NY
+      responses:
+        201:
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User registered successfully."
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "64fa7c4e12345abc67890def"
+                      firstName:
+                        type: string
+                        example: "John"
+                      lastName:
+                        type: string
+                        example: "Doe"
+                      email:
+                        type: string
+                        example: "john.doe@example.com"
+                      country:
+                        type: string
+                        example: United States
+                      city: 
+                        type: string
+                        example: New York, NY
+        409 :
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    statusCode:
+                      type: integer
+                      example: 409
+                    message :
+                      type: string
+                      example: "this email : john.doe@example.com is already registered!"
+                    errorSources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          path:
+                            type: string
+                            example: ""
+                          message:
+                            type: string
+                            example: "this email : john.doe@example.com is already registered!"
+        500 :
+          $ref: '#/components/responses/InternalServerError'                   
+  /auth/signin:
+    post:
+      summary: User signup
+      tags : [User]
+      description: This endpoint allows a user to login an account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  example: "P@ssw0rd"
+
+      responses:
+        200:
+          description: User login successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User registered successfully."
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "64fa7c4e12345abc67890def"
+                      firstName:
+                        type: string
+                        example: "John"
+                      lastName:
+                        type: string
+                        example: "Doe"
+                      email:
+                        type: string
+                        example: "john.doe@example.com"
+                      country:
+                        type: string
+                        example: United States
+                      city: 
+                        type: string
+                        example: New York, NY
+                  accessToken:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmFjYWVmNzM0OTVkMzAxYTkzZmUxMjYiLCJlbWFpbCI6IndlYkBwcm9ncmFtbWluZy1oZXJvLmNvbSIsIm5hbWUiOiJQcm9ncmFtbWluZyBIZXJvIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzMyMzQzMzIyLCJleHAiOjE3MzI0Mjk3MjJ9.coarA64hI2RwaCopKR9iYtyuy31rxO56HtCrBICdjMw"
+        401 :
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: false
+                    statusCode:
+                      type: integer
+                      example: 409
+                    message :
+                      type: string
+                      example: "this email : john.doe@example.com is not registered!"
+                    errorSources:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          path:
+                            type: string
+                            example: ""
+                          message:
+                            type: string
+                            example: "this email : john.doe@example.com is not registered!"                          
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /users/profile:
+    patch:
+      summary: Update User Profile
+      description: Update the user's profile with new information such as name, email, address, and password.
+      tags:
+        - User
+      security:
+        - BearerAuth: []  # Apply security using JWT Bearer Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref : "#/components/schemas/User"
+      responses:
+        '200':
+          description: User profile updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User profile updated successfully."
+                  data:
+                    $ref : "#/components/schemas/User"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  
+  /hotels :
+    get:
+      summary: Retrieve a list of all hotels
+      tags : [Hotel]
+      description: Returns a list of all available hotels with their details.
+      parameters:
+        - name: search
+          in: query
+          description: Search term for filtering hotels.
+          required: false
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: The field to sort by.
+          required: false
+          schema:
+            type: string
+            enum: [asc,desc]
+            example: "asc"
+
+        - name: limit
+          in: query
+          description: Maximum number of results per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number for paginated results.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        
+        - name: ratings
+          in: query
+          description: Minimum average rating to filter hotels.
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: city
+          in: query
+          description: Filter hotels by city.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: All hotel retrieve successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: All Hotel Retrieve Successfully
+                  data:
+                    type: object
+                    properties:
+                      totalPage:
+                        type: integer
+                        example: 10
+                      nextPage:
+                        type: integer
+                        example: 2
+                      hotels:
+                        type: array
+                        items: 
+                          $ref: '#/components/schemas/Hotel'
+                          
+                      prevPage:
+                        type: integer
+                        example: null
+                      hasNextPage: 
+                        type: boolean
+                        example: true
+                    
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create a new hotel
+      tags : [Hotel]
+      description: Add a new hotel to the system with all required details.
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HotelRequest'
+      responses:
+        '201':
+          description: Hotel created successfully.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Hotel Created successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: '#/components/schemas/Hotel'
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Title required
+                        message: 
+                          type: string
+                          example: Required
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /hotels/{hotelId}:
+    get:
+      summary: Retrieve details of a single hotel
+      tags : [Hotel]
+      description: Fetch detailed information about a specific hotel using its unique identifier.
+      parameters:
+        - name: hotelId
+          in: path
+          required: true
+          description: The unique identifier of the hotel.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved hotel details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: A Hotel Retrieve Successfully
+                  data:
+                    $ref: '#/components/schemas/Hotel'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          message:
+            type: string
+            example: Hotel Not found
+        '500' :
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update a Hotel
+      tags : [Hotel]
+      description: Update a hotel to the partial request.
+      parameters:
+        - $ref: '#/components/parameters/HotelIdParam'
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The name of the hotel.
+                  example: Grand Palace Hotel
+                description:
+                  type: string
+                  description: A brief description of the hotel.
+                  example: A luxurious hotel offering premium services and amenities.
+                  
+      responses:
+        '200':
+          description: Hotel Update by parital field request.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Hotel Update successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Hotel'
+                
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete A hotel by id
+      tags : [Hotel]
+      description: Delete a Hotel by passing Hotel Id
+      parameters:
+        - $ref: '#/components/parameters/HotelIdParam'
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Hotel deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Delete hotel successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Hotel'
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Title required
+                        message: 
+                          type: string
+                          example: Required
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /hotels/{hotelId}/reviews:
+    get :
+      summary: Reaview a Hotel
+      tags : [Review]
+      description: Review a hotel by hotel id.
+      parameters:
+        - $ref: '#/components/parameters/HotelIdParam'
+        - name : userId
+          in: query
+          description: find by user id
+          required: false
+          schema:
+            type: string
+        - name : hotelId
+          in: query
+          description: find by hotel id
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number for paginated results.
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Review list by Hotel id.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Hotel Review successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref : '#/components/schemas/HotelReviewResponse'
+                
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Reaview a Hotel
+      tags : [Review]
+      description: Review a hotel by hotel id.
+      parameters:
+        - $ref: '#/components/parameters/HotelIdParam'
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/HotelReviewRequest'
+                  
+      responses:
+        '200':
+          description: Review specific Hotel.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Hotel Review successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref : '#/components/schemas/HotelReviewResponse'
+                
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /hotels/{hotelId}/related:
+    get:
+      summary: Retrieve details of a realed or suggested hotel
+      tags : [Hotel]
+      description: Fetch Hotels of related hotel
+      parameters:
+        - name: hotelId
+          in: path
+          required: true
+          description: The unique identifier of the hotel.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved hotel details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: All Hotel Retrieve Successfully
+                  data:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/Hotel'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          message:
+            type: string
+            example: Hotel Not found
+        '500' :
+          $ref: '#/components/responses/InternalServerError'
+  /reviews/{reviewId}:
+    patch:
+      summary: Update Review 
+      tags : [Review]
+      description: Review Updated.
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: The unique identifier of the Review.
+          schema:
+            type: string
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref : '#/components/schemas/HotelReviewRequest'
+                  
+      responses:
+        '200':
+          description: Hotel Update by parital field request.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Review Update successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref : '#/components/schemas/HotelReviewResponse'
+                
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Reaview a Hotel
+      tags : [Review]
+      description: Delet Review by review id.
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: The unique identifier of the Review.
+          schema:
+            type: string
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+                  
+      responses:
+        '200':
+          description: Hotel Update by parital field request.
+          content:
+            application/json:
+              schema:
+                properties:
+                  message: 
+                    type: string
+                    example: Review Deleted successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref : '#/components/schemas/HotelReviewResponse'
+                
+        400:
+          $ref: '#/components/responses/400'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /booking:
+    get:
+      summary: List of all bookings 
+      tags : [Booking]
+      description: Request for all Booking list
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      parameters:
+        - name : userId
+          in: query
+          description: find by user id
+          required: false
+          schema:
+            type: string
+        - name : hotelId
+          in: query
+          description: find by hotel id
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number for paginated results.
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Successfully retrieved all Booking.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: All Booking Retrieve Successfully
+                  data:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/BookingResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          message:
+            type: string
+            example: Hotel Not found
+        '500' :
+          $ref: '#/components/responses/InternalServerError'       
+    post:
+      summary: List of all bookings 
+      tags : [Booking]
+      description: Request for all Booking list
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Successfully retrieved all Booking.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: All Booking Retrieve Successfully
+                  data:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/BookingResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          message:
+            type: string
+            example: Hotel Not found
+        '500' :
+          $ref: '#/components/responses/InternalServerError'       
+  /booking/{bookingId}:
+    delete:
+      summary: Delete Booking by id
+      tags : [Booking]
+      description: Delete a Booking info by passing Booking Id
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: The unique identifier of the booking.
+          schema:
+            type: string
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Booking deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Delete Booking successfully
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode: 
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/BookingResponse'
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Booking id required
+                        message: 
+                          type: string
+                          example: Required
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+  /payment:
+    get:
+      summary: List of all Payments 
+      tags : [Payment]
+      description: Request for all Payment list
+      security: # Apply security to this endpoint
+        - BearerAuth: []
+      parameters:
+        - name : userId
+          in: query
+          description: find by user id
+          required: false
+          schema:
+            type: string
+        - name : hotelId
+          in: query
+          description: find by hotel id
+          required: false
+          schema:
+            type: string
+        - name : txId
+          in: query
+          description: find by payment transaction id
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number for paginated results.
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Successfully retrieved all Payments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: All Payments Retrieve Successfully
+                  data:
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/StripePaymentResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          message:
+            type: string
+            example: Hotel Not found
+        '500' :
+          $ref: '#/components/responses/InternalServerError'       
+  /payments/stripe/create-intent:
+    post:
+      summary: Create a Stripe Payment Intent
+      tags: [Payment]
+      description: Initiate a payment intent using Stripe for online payments.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripePaymentIntentRequest'
+      responses:
+        '201':
+          description: Stripe Checkout Session created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Stripe Checkout Session created successfully
+                  data:
+                    $ref: '#/components/schemas/StripeCheckoutResponse'
+        '400':
+          description: Validation Error.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /payments/stripe/confirm :
+    post:
+      summary: Confirm Stripe Payment
+      description: Confirms the payment after the user has completed the Stripe confirm payment.
+      tags:
+        - Payment
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session_id:
+                  type: string
+                  description: The session ID returned by Stripe during the creation of the checkout session.
+                  example: "cs_test_a1d3ZBBjYDmxJkycXdwNMUCf2B88ih3fJnX2phUOCyB4JNOSVArODl2IFf"
+      responses:
+        '201':
+          description: Stripe payement confirm successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Stripe Checkout Session created successfullys
+                  data:
+                    $ref: '#/components/schemas/StripePaymentResponse'
+        '400':
+          description: Validation Error.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /payments/cash-on-arrival:
+    post:
+      summary: Create a Cash on Arrival Payment
+      tags: [Payment]
+      description: Record a cash-on-arrival payment for a hotel booking.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CashPaymentRequest'
+      responses:
+        '201':
+          description: Cash payment recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Cash payment recorded successfully"
+                  data:
+                    $ref: '#/components/schemas/CashPaymentResponse'
+                    
+                        
+        '400':
+          description: Validation Error.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+  /notification:
+    get:
+      summary: Retrieve Booking Confirmation Notifications
+      description: Fetch a list of notifications related to booking confirmations for the user.
+      tags:
+        - Notification
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user whose booking confirmation notifications need to be retrieved.
+          schema:
+            type: string
+            example: "64c4f21e1ad2d4001c8e5a90"
+        - name: status
+          in: query
+          required: false
+          description: Filter notifications by status (e.g., unread, read).
+          schema:
+            type: string
+            enum: [unread, read]
+            example: "unread"
+        - name: limit
+          in: query
+          required: false
+          description: Limit the number of notifications returned.
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          required: false
+          description: The offset for pagination.
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Booking confirmation notifications retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Booking confirmation notifications retrieved successfully."
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: The unique identifier for the notification.
+                          example: "64c4f21e1ad2d4001c8e5a91"
+                        title:
+                          type: string
+                          description: The title of the notification.
+                          example: "Booking Confirmed"
+                        message:
+                          type: string
+                          description: The body content of the notification.
+                          example: "Your booking at XYZ Hotel has been confirmed. Check-in on 2024-12-01."
+                        status:
+                          type: string
+                          description: The status of the notification.
+                          example: "unread"
+                        createdAt:
+                          type: string
+                          description: The date and time when the notification was created.
+                          format: date-time
+                          example: "2024-11-23T10:00:00Z"
+    post:
+      summary: Send a Notification
+      description: Sends a notification with the necessary details.
+      tags:
+        - Notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The title of the notification.
+                  example: "Payment Confirmation"
+                message:
+                  type: string
+                  description: The body content of the notification.
+                  example: "Your payment has been successfully processed."
+                recipientId:
+                  type: string
+                  description: The unique identifier of the recipient user.
+                  example: "64c4f21e1ad2d4001c8e5a90"
+                type:
+                  type: string
+                  description: The type/category of the notification (e.g., payment, alert).
+                  example: "payment"
+      responses:
+        '200':
+          description: Notification sent successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Notification sent successfully.
+        '400':
+          description: Validation Error.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          
+components:
+  securitySchemes:
+    BearerAuth: # Name of the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # Optional, helps indicate the token format
+  schemas:
+    User:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: "John"
+          description: "User's first name."
+        lastName:
+          type: string
+          example: "Doe"
+          description: "User's last name."
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+          description: "User's email address."
+        password:
+          type: string
+          example: "newpassword123"
+          description: "User's password (should be hashed in the backend)."
+        image:
+          type: string
+          format: uri
+          example: "https://example.com/profile.jpg"
+          description: "User's profile image URL."
+        address:
+          type: string
+          example: "123 Main St, Apt 4B"
+          description: "User's address."
+        city:
+          type: string
+          example: "New York"
+          description: "User's city."
+        country:
+          type: string
+          example: "USA"
+          description: "User's country."
+        location:
+          type: string
+          example: "40.7128° N, 74.0060° W"
+          description: "User's geographical location (latitude, longitude)."
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1990-01-01"
+          description: "User's date of birth."
+
+    Location:
+      type: object
+      properties:
+        country:
+          type: string
+          example: "United States"
+        city:
+          type: string
+          example: "New York"
+        zip-code:
+          type: string
+          example: "10001"
+        address:
+          type: string
+          example: "123 Main Street"
+        latitude:
+          type: number
+          format: float
+          example: 40.7128
+        longitude:
+          type: number
+          format: float
+          example: -74.0060
+    HotelRequest:
+      type: object
+      required:
+        - title
+        - description
+        - country
+        - city
+        - images
+        - location
+        - contactInfo
+        - pricePerNight
+        - availableRooms
+        - amenities
+        - currency
+        - policies
+      properties:
+        title:
+          type: string
+          description: The name of the hotel.
+          example: Grand Palace Hotel
+        description:
+          type: string
+          description: A brief description of the hotel.
+          example: A luxurious hotel offering premium services and amenities.
+        images:
+          type: array
+          description: A list of URLs pointing to the hotel's images.
+          items:
+            type: string
+          example: 
+            - https://example.com/images/hotel1.jpg
+            - https://example.com/images/hotel2.jpg
+        location:
+          type: object
+          required:
+            - country
+            - city
+            - address
+          properties:
+            country:
+              type: string
+              description: The country where the hotel is located.
+              example: USA
+            city:
+              type: string
+              description: The city where the hotel is located.
+              example: New York
+            zipCode:
+              type: string
+              description: The postal code of the hotel's location.
+              example: 10001
+            address:
+              type: string
+              description: The full address of the hotel.
+              example: 123 Main Street
+            latitude:
+              type: number
+              format: float
+              description: The latitude coordinate of the hotel's location.
+              example: 40.7128
+            longitude:
+              type: number
+              format: float
+              description: The longitude coordinate of the hotel's location.
+              example: -74.0060
+        contactInfo:
+          type: string
+          description: The contact information for the hotel, such as phone or email.
+          example: +1-123-456-7890
+        pricePerNight:
+          type: number
+          format: float
+          description: The price per night for a stay at the hotel.
+          example: 150.00
+        availableRooms:
+          type: integer
+          description: The number of rooms currently available for booking.
+          example: 20
+        amenities:
+          type: array
+          description: A list of amenities provided by the hotel.
+          items:
+            type: string
+          example: 
+            - Free Wi-Fi
+            - Swimming Pool
+            - Fitness Center
+            - Breakfast Included
+        tags:
+          type: array
+          description: Tags associated with the hotel for categorization.
+          items:
+            type: string
+          example:
+            - Family-Friendly
+            - Beachfront
+        currency:
+          type: string
+          description: The currency used for pricing.
+          example: USD
+        policies:
+          type: object
+          required:
+            - checkIn
+            - checkOut
+          properties:
+            checkIn:
+              type: string
+              description: The check-in time policy for the hotel.
+              example: 2:00 PM
+            checkOut:
+              type: string
+              description: The check-out time policy for the hotel.
+              example: 11:00 AM
+            cancellationPolicy:
+              type: string
+              description: The cancellation policy for the hotel.
+              example: Free cancellation within 24 hours before check-in.
+    Policies:
+      type: object
+      properties:
+        checkIn:
+          type: string
+          format: time
+          example: "14:00"
+        checkOut:
+          type: string
+          format: time
+          example: "11:00"
+        cancellationPolicy:
+          type: string
+          example: "Free cancellation up to 24 hours before check-in."
+    Hotel:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64b1fdd84f5b3c1234abcd12"
+        title:
+          type: string
+          example: "Luxury Hotel"
+        description:
+          type: string
+          example: "A luxurious hotel located in the heart of New York City."
+        images:
+          type: array
+          items:
+            type: string
+          example: ["image1.jpg", "image2.jpg"]
+        location:
+          $ref: '#/components/schemas/Location'
+        contact-Info:
+          type: string
+          example: "+1-234-567-890"
+        pricePer-Night:
+          type: number
+          format: float
+          example: 199.99
+        available-Rooms:
+          type: integer
+          example: 10
+        amenities:
+          type: array
+          items:
+            type: string
+          example: ["Free WiFi", "Swimming Pool", "Gym"]
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["luxury", "city center", "family-friendly"]
+        currency:
+          type: string
+          example: "USD"
+        policies:
+          $ref: '#/components/schemas/Policies'
+    HotelReviewRequest:
+      type: object
+      required:
+        - hotelId
+        - userId
+        - ratings
+        - review
+      properties:
+        hotelId:
+          type: string
+          description: The unique identifier of the hotel being reviewed.
+          example: "64bfc2f894ad3c001c8e5a79"
+        userId:
+          type: string
+          description: The unique identifier of the user submitting the review.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        ratings:
+          type: integer
+          description: Rating for the hotel (1-5).
+          example: 5
+          minimum: 1
+          maximum: 5
+        review:
+          type: string
+          description: The written review content.
+          example: "The hotel was clean and the staff were friendly!"
+    HotelReviewResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the review.
+          example: "64c4f21e1ad2d4001c8e5a90"
+        hotelId:
+          type: string
+          description: Unique identifier for the hotel being reviewed.
+          example: "64bfc2f894ad3c001c8e5a79"
+        userId:
+          type: string
+          description: Unique identifier for the user who submitted the review.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        ratings:
+          type: integer
+          description: Rating provided by the user.
+          example: 4
+        review:
+          type: string
+          description: Review content.
+          example: "Good location but the rooms were small."
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the review was created.
+          example: "2024-11-23T10:00:00Z"
+    BookingRequest:
+      type: object
+      properties:
+        hotel:
+          type: string
+          description: ID of the hotel being booked.
+          example: "64a4e0cd2c2eec3a14c9b423"
+        user:
+          type: string
+          description: ID of the user making the booking.
+          example: "64b5e1cd3d3aec5b24d1a234"
+        checkInDate:
+          type: string
+          format: date
+          example: "2024-12-01"
+        checkOutDate:
+          type: string
+          format: date
+          example: "2024-12-10"
+        duration:
+          type: integer
+          description: Total number of days for the booking.
+          example: 9
+        totalPrice:
+          type: number
+          format: float
+          description: Total price of the booking.
+          example: 750.50
+        currency:
+          type: string
+          description: Currency of the booking.
+          example: "USD"
+        guest:
+          type: object
+          properties:
+            children:
+              type: integer
+              example: 2
+            adults:
+              type: integer
+              example: 2
+          required:
+            - children
+            - adults
+      required:
+        - hotel
+        - user
+        - checkInDate
+        - checkOutDate
+        - duration
+        - totalPrice
+        - currency
+        - status
+        - guest
+    BookingResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "64d7e1ce4e5aec6b37e1b567"
+        hotel:
+          type: string
+          example: "64a4e0cd2c2eec3a14c9b423"
+        user:
+          type: string
+          example: "64b5e1cd3d3aec5b24d1a234"
+        checkInDate:
+          type: string
+          format: date
+          example: "2024-12-01"
+        checkOutDate:
+          type: string
+          format: date
+          example: "2024-12-10"
+        duration:
+          type: integer
+          example: 9
+        totalPrice:
+          type: number
+          format: float
+          description: Total price of the booking.
+          example: 750.50
+        currency:
+          type: string
+          example: "USD"
+        status:
+          type: string
+          enum: [pending, confirmed, canceled, completed]
+          description: Current status of the booking.
+          example: "pending"
+        guest:
+          type: object
+          properties:
+            children:
+              type: integer
+              example: 2
+            adults:
+              type: integer
+              example: 2
+    StripePaymentIntentRequest:
+      type: object
+      required:
+        - userId
+        - hotelId
+        - amount
+        - currency
+        - method
+      properties:
+        userId:
+          type: string
+          description: Unique identifier for the user.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        hotelId:
+          type: string
+          description: Unique identifier for the hotel.
+          example: "64bfc2f894ad3c001c8e5a79"
+        amount:
+          type: number
+          description: Amount to be paid.
+          example: 200.00
+        currency:
+          type: string
+          description: Currency of the payment.
+          example: "USD"
+        checkInDate:
+          type: string
+          format: date
+          example: "2024-12-01"
+        checkOutDate:
+          type: string
+          format: date
+          example: "2024-12-10"
+        method:
+          type: string
+          enum: [cash, stripe]
+          description: Payment method.
+          example: "stripe"
+    StripeCheckoutResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+          description: Unique identifier for the Stripe Checkout session.
+          example: "cs_test_a1d3ZBBjYDmxJkycXdwNMUCf2B88ih3fJnX2phUOCyB4JNOSVArODl2IFf"
+        session_url:
+          type: string
+          description: The URL to redirect the user for completing the payment in Stripe Checkout.
+          example: "https://checkout.stripe.com/c/pay/cs_test_a1d3ZBBjYDmxJkycXdwNMUCf2B88ih3fJnX2phUOCyB4JNOSVArODl2IFf#fidkdWxOYHwnPyd1blpxYHZxWjA0VUhpN3E1MF0zVm1tdWdHNTZJd2pVb1d3UTRWSGBkMGM8XE9%2FXFBNUkd2dUpGXEpJQ0JcQ2dPX2hhck1cbXZRcmFpQDE1NGsyNjFHNk5pRmtoSE5QdkRQNTVIU0dIXFEzbicpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl"
+
+    StripePaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payment.
+          example: "64c4f21e1ad2d4001c8e5a90"
+        userId:
+          type: string
+          description: Unique identifier of the user making the payment.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        hotelId:
+          type: string
+          description: Unique identifier of the hotel for which payment was made.
+          example: "64bfc2f894ad3c001c8e5a79"
+        payment:
+          type: string
+          description: The payment status.
+          enum:
+            - paid
+            - unpaid
+            - refunded
+          example: "paid"
+        method:
+          type: string
+          description: Payment method used.
+          example: "stripe"
+        transactionId:
+          type: string
+          description: Transaction identifier for the payment.
+          example: "txn_64bfc2f894ad3c001c8e5a7d"
+        amount:
+          type: number
+          description: Total amount paid.
+          example: 200.00
+        currency:
+          type: string
+          description: Payment currency.
+          example: "USD"
+        paymentDate:
+          type: string
+          format: date-time
+          description: Date and time of the payment.
+          example: "2024-11-23T10:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the payment record was created.
+          example: "2024-11-23T09:00:00Z"
+    CashPaymentRequest:
+      type: object
+      required:
+        - userId
+        - hotelId
+        - amount
+        - currency
+        - method
+        - checkInDate
+        - checkOutDate
+      properties:
+        userId:
+          type: string
+          description: Unique identifier for the user.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        hotelId:
+          type: string
+          description: Unique identifier for the hotel.
+          example: "64bfc2f894ad3c001c8e5a79"
+        amount:
+          type: number
+          description: Amount to be paid.
+          example: 200.00
+        currency:
+          type: string
+          description: Currency of the payment.
+          example: "USD"
+        method:
+          type: string
+          enum: [cash, stripe]
+          description: Payment method.
+          example: "cash"
+        checkInDate:
+          type: string
+          format: date
+          description: Check-in date for the booking.
+          example: "2024-12-01"
+        checkOutDate:
+          type: string
+          format: date
+          description: Check-out date for the booking.
+          example: "2024-12-05"
+    CashPaymentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the payment.
+          example: "64c4f21e1ad2d4001c8e5a90"
+        userId:
+          type: string
+          description: Unique identifier of the user making the payment.
+          example: "64bfc2f894ad3c001c8e5a7b"
+        hotelId:
+          type: string
+          description: Unique identifier of the hotel for which payment was made.
+          example: "64bfc2f894ad3c001c8e5a79"
+        payment:
+          type: string
+          description: The payment status.
+          enum:
+            - paid
+            - unpaid
+            - refunded
+          example: "paid"
+        method:
+          type: string
+          description: Payment method used.
+          example: "cash"
+        transactionId:
+          type: string
+          description: Transaction identifier for the payment.
+          example: "txn_64bfc2f894ad3c001c8e5a7d"
+        amount:
+          type: number
+          description: Total amount paid.
+          example: 200.00
+        currency:
+          type: string
+          description: Payment currency.
+          example: "USD"
+        paymentDate:
+          type: string
+          format: date-time
+          description: Date and time of the payment.
+          example: "2024-11-23T10:00:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the payment record was created.
+          example: "2024-11-23T09:00:00Z"
+  parameters:
+    HotelIdParam:
+      name: hotelId
+      in: path
+      required: true
+      description: The unique identifier of the hotel.
+      schema:
+        type: string
+        
+  responses:
+    BadRequest:
+      description: Bad request due to invalid parameters.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              statusCode:
+                type: integer
+                example: 400
+              error:
+                type: string
+                example: "Invalid request parameters."
+    Unauthorized:
+      description: Authentication is required or failed.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              statusCode:
+                type: integer
+                example: 401
+              error:
+                type: string
+                example: "Authentication failed. Token invalid or missing."
+              errorSources:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path:
+                      type: string
+                      example: ""
+                    message:
+                      type: string
+                      example: "JWT token has expired. Please log in again."
+                      
+    Forbidden:
+      description: Access denied due to insufficient permissions.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              statusCode:
+                type: integer
+                example: 403
+              error:
+                type: string
+                example: "You are not authorized to access this resource."
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              statusCode: 
+                type: integer
+                format : int32
+                example : 404
+              message: 
+                type: string
+                example : Not Found
+    400:
+      description: Bad Request - The client has sent invalid data or the request is not properly formatted.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 400
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Bad Request - The client has sent invalid data or the request is not properly formatted.
+                        
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              statusCode:
+                type: integer
+                example : 500
+              message:
+                type: string
+                example: "Internal server error."
+          
+                
+
+      
+

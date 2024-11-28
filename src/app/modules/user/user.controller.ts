@@ -21,7 +21,7 @@ const signupController = catchAsync(async (req, res) => {
 const updateUserRoleController = catchAsync(async (req, res) => {
   const { role } = req.body;
   const { userId } = req.params;
-  if (req.user.userId === userId) {
+  if (req?.user?.userId === userId) {
     throw new AppError(httpStatus.CONFLICT, 'You cannot change your own role!');
   }
 
@@ -36,7 +36,7 @@ const updateUserRoleController = catchAsync(async (req, res) => {
 });
 
 const getAllUserController = catchAsync(async (req, res) => {
-  const users = await userService.getAllUserFromDB(req.user.userId);
+  const users = await userService.getAllUserFromDB(req?.user?.userId as string);
 
   sendResponse(res, {
     success: true,
@@ -47,9 +47,9 @@ const getAllUserController = catchAsync(async (req, res) => {
 });
 
 const getSingleUserController = catchAsync(async (req, res) => {
-  console.log(req.user)
-  const users = await userService.getSingleUserFromDB(req?.user?.userId );
-
+  const users = await userService.getSingleUserFromDB(
+    req?.user?.userId as string,
+  );
   sendResponse(res, {
     success: true,
     message: 'All User retrieve successfully',
@@ -70,7 +70,7 @@ const updateProfileController = catchAsync(async (req, res) => {
   }
 
   const updateProfile = await userService.updateProfileToDB(
-    req.user.userId ,
+    req.user?.userId as string,
     payload,
   );
   sendResponse(res, {

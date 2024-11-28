@@ -31,6 +31,7 @@ const OauthLoginSuccess = catchAsync(async (req, res) => {
 
   const token = createToken(
     {
+      userId: user._id as string ,
       email: user.email as string,
       role: user.role,
       firstName: user.firstName as string,

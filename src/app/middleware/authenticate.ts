@@ -5,6 +5,7 @@ import { catchAsync } from '../utils/catchAsync';
 import httpStatus from 'http-status';
 import passport from 'passport';
 import { TUser } from '../modules/user/user.interface';
+import { verifyToken } from '../modules/auth/auth.utils';
 
 const authenticate = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -23,15 +24,15 @@ const authenticate = catchAsync(
         'Invalid Bearer token format',
       );
     }
-
+    
      passport.authenticate(
       'jwt',
-      { session: false },
-      (err: any, user: TUser, info: any) => {
+      { session: true },
+      async (err: any, user: TUser, info: any) => {
+        console.log(await verifyToken(token))
         if (err) {
           return next(err); // Handle internal server errors
         }
-
         if (!user) {
           return res.status(httpStatus.UNAUTHORIZED).json({
             message: info?.message || 'Authentication failed',

@@ -4,7 +4,7 @@ import UserModel from "./user.model"
 import bcrypt from 'bcrypt'
 
 export const findUserByEmail = async (email:string) =>{
-    return await UserModel.findOne({email}).select('+password -__v')
+    return await UserModel.findOne({email}).select('+password -__v').lean()
 } 
 
 

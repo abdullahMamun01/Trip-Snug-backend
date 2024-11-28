@@ -52,6 +52,22 @@ const userSchema = new Schema<TUser>(
     },
     address: {
       type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: false,
+    },
+    country: {
+      type: String,
+      required: false,
+    },
+    location: {
+      lat: { type: Number, required: false },
+      lng: { type: Number, required: false },
+    },
+    dateOfBirth: {
+      type: Date,
       required: false,
     },
   },

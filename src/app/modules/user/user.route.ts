@@ -25,15 +25,15 @@ router.get(
 );
 
 
-router.put(
+router.patch(
   '/users/:userId/role',
   validateRequest(userRoleSchema),
   authoRization(USER_ROLE.admin),
   userController.updateUserRoleController,
 );
 
-router.put(
-  '/me/update-profile',
+router.patch(
+  '/users/profile',
   validateRequest(updateUserValidateSchema),
   authoRization(USER_ROLE.user),
   userController.updateProfileController,

@@ -1261,10 +1261,6 @@ components:
           format: email
           example: "john.doe@example.com"
           description: "User's email address."
-        password:
-          type: string
-          example: "newpassword123"
-          description: "User's password (should be hashed in the backend)."
         image:
           type: string
           format: uri

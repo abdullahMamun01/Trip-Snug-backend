@@ -1,33 +1,49 @@
 import { z } from 'zod';
 import { USER_ROLE } from './user.constants';
 
+const userSchmea = z.object({
+  firstName: z.string({ required_error: 'First Name is required' }),
+  lastName: z.string({ required_error: 'Last Name is required' }),
 
-const userSchmea =  z.object({
-  name: z.string({ required_error: 'Name is required' }),
   email: z
     .string({ required_error: 'Email is required' })
     .email({ message: 'Invalid email address' })
-     // eslint-disable-next-line no-useless-escape
+    // eslint-disable-next-line no-useless-escape
     .regex(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, {
       message: 'Invalid email format',
     }),
   password: z.string({ required_error: 'Password is required!' }),
-  phone: z
-    .string({ required_error: 'phone number is required' })
-    .regex(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' }),
   role: z.enum(['user', 'admin']).default('user'),
-  address: z.string({ required_error: 'Address is required' })
-})
+  address: z.string({ required_error: 'Address is required' }),
+  city: z.string({ required_error: 'City is required' }).optional(), // Optional field
+  country: z.string({ required_error: 'Country is required' }).optional(), // Optional field
 
-const userRegisterValidationSchema = z.object({
-  body:userSchmea,
+  location: z
+    .object({
+      lat: z.number({ required_error: 'Latitude is required' }),
+      lng: z.number({ required_error: 'Longitude is required' }),
+    })
+    .optional(), // Optional field for geolocation
+
+  dateOfBirth: z
+    .string()
+    .refine(
+      (val) => {
+        const date = new Date(val);
+        return !isNaN(date.getTime()); // Check if valid date
+      },
+      { message: 'Invalid date format. Use a valid ISO date string.' },
+    )
+    .optional(), // Optional field
 });
 
-
+const userRegisterValidationSchema = z.object({
+  body: userSchmea,
+});
 
 export const updateUserValidateSchema = z.object({
-  body: userSchmea.partial().strict()
-})
+  body: userSchmea.partial().strict(),
+});
 
 export const userRoleSchema = z.object({
   body: z.object({

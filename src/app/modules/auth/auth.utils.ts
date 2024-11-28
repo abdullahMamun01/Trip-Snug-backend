@@ -9,7 +9,7 @@ import { findUserByEmail } from '../user/user.utils';
 
 
 export const createToken = (
-  JwtPayload: { email: string, role: string ,firstName:string,lastName:string},
+  JwtPayload: {userId?:string , email: string, role: string ,firstName:string,lastName:string},
   secretKey: string,
   expiresIn: string,
 ) => {

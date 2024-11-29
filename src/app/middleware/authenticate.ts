@@ -5,7 +5,7 @@ import { catchAsync } from '../utils/catchAsync';
 import httpStatus from 'http-status';
 import passport from 'passport';
 import { TUser } from '../modules/user/user.interface';
-import { verifyToken } from '../modules/auth/auth.utils';
+
 
 const authenticate = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -29,7 +29,6 @@ const authenticate = catchAsync(
       'jwt',
       { session: true },
       async (err: any, user: TUser, info: any) => {
-        console.log(await verifyToken(token))
         if (err) {
           return next(err); // Handle internal server errors
         }

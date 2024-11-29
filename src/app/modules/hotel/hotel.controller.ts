@@ -85,9 +85,20 @@ const deleteHotel = catchAsync(async (req: Request, res: Response) => {
     data: deletedHotel,
   });
 });
+const getRelatedHotels = catchAsync(async (req: Request, res: Response) => {
+  const hotelId = req.params.hotelId;
+  const deletedHotel = await hotelService.fetchRelatedHotels(hotelId);
+  sendResponse(res, {
+    success: true,
+    message: 'Related Hotel retrireve successfully',
+    statusCode: httpStatus.OK,
+    data: deletedHotel,
+  });
+});
 export const hotelController = {
   getAllHotels,
   getHotel,
+  getRelatedHotels,
   createHotel,
   updateHotel,
   deleteHotel,

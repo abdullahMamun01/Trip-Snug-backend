@@ -10,11 +10,30 @@ router.get(
   '/',
   hotelController.getAllHotels,
 );
+router.get(
+  '/:hotelId/related' ,
+  hotelController.getRelatedHotels,
+);
 
 router.post(
   '/',
   authenticate,
-  authoRization(USER_ROLE.user),
+  authoRization(USER_ROLE.admin),
   hotelController.createHotel,
 );
+router.patch(
+  '/:hotelId',
+  authenticate,
+  authoRization(USER_ROLE.admin),
+  hotelController.updateHotel,
+);
+router.delete(
+  '/:hotelId',
+  authenticate,
+  authoRization(USER_ROLE.admin),
+  hotelController.deleteHotel,
+);
+
+
+
 export const HotelRoutes = router

@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { IHotel } from './hotel.interface';
+
+// List of hotel types (classifications)
 const hotelType = [
   '1-star',
   '2-star',
@@ -12,7 +14,9 @@ const hotelType = [
   'Boutique',
   'Business',
   'Family-friendly',
-]
+];
+
+// Location schema without _id field
 const locationSchema = new Schema({
   country: { type: String, required: true },
   city: { type: String, required: true },
@@ -20,24 +24,24 @@ const locationSchema = new Schema({
   address: { type: String, required: true },
   latitude: { type: Number, required: false },
   longitude: { type: Number, required: false },
-});
+}, { _id: false }); // Add _id: false here
 
+// Policies schema without _id field
 const policiesSchema = new Schema({
   checkIn: { type: String, required: true },
   checkOut: { type: String, required: true },
   cancellationPolicy: { type: String, required: true },
-});
+}, { _id: false }); // Add _id: false here
 
-const discountSchema = new Schema(
-  {
-    percentage: { type: Number, required: true },
-    description: { type: String, required: false },
-    validFrom: { type: String, required: false },
-    validUntil: { type: String, required: false },
-  },
-  { _id: false },
-);
+// Discount schema without _id field
+const discountSchema = new Schema({
+  percentage: { type: Number, required: true },
+  description: { type: String, required: false },
+  validFrom: { type: String, required: false },
+  validUntil: { type: String, required: false },
+}, { _id: false }); // _id is already excluded here
 
+// Hotel schema with the subdocuments
 const hotelSchema = new Schema<IHotel>({
   title: { type: String, required: true },
   description: { type: String, required: true },
@@ -45,6 +49,7 @@ const hotelSchema = new Schema<IHotel>({
   location: { type: locationSchema, required: true },
   contactInfo: { type: String, required: true },
   pricePerNight: { type: Number, required: true },
+  totalRooms: { type: Number, required: true },
   availableRooms: { type: Number, required: true },
   amenities: { type: [String], required: true },
   tags: { type: [String], required: true },
@@ -57,9 +62,9 @@ const hotelSchema = new Schema<IHotel>({
     required: true,
   },
   isDeleted: {
-    type:Boolean ,
-    default: false
-  }
-});
+    type: Boolean,
+    default: false,
+  },
+},{timestamps:true ,versionKey:false});
 
 export const HotelModel = model<IHotel>('Hotel', hotelSchema);

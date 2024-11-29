@@ -12,6 +12,7 @@ export interface IHotel {
   };
   contactInfo: string;
   pricePerNight: number;
+  totalRooms: number ,
   availableRooms: number;
   amenities: string[];
   tags: string[];

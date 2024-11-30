@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import  { Schema } from "mongoose";
 
 export interface IBooking  {
     hotel: Schema.Types.ObjectId;
@@ -16,4 +16,18 @@ export interface IBooking  {
       adults: number;
     };
     isDeleted?:boolean 
+  }
+
+
+  export interface IBookingPayload  {
+    hotel: Schema.Types.ObjectId;
+    user: string;
+    checkInDate: Date;
+    checkOutDate: Date;
+    currency: string;
+    roomsAllocated:number ,
+    guest: {
+      children: number;
+      adults: number;
+    };
   }

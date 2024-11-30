@@ -1643,17 +1643,16 @@ components:
     StripePaymentIntentRequest:
       type: object
       required:
-        - userId
-        - hotelId
+        - user
+        - hotel
         - amount
         - currency
-        - method
       properties:
-        userId:
+        user:
           type: string
           description: Unique identifier for the user.
           example: "64bfc2f894ad3c001c8e5a7b"
-        hotelId:
+        hotel:
           type: string
           description: Unique identifier for the hotel.
           example: "64bfc2f894ad3c001c8e5a79"
@@ -1673,11 +1672,17 @@ components:
           type: string
           format: date
           example: "2024-12-10"
-        method:
-          type: string
-          enum: [cash, stripe]
-          description: Payment method.
-          example: "stripe"
+        guest:
+          type: object
+          properties:
+            adults:
+              type: number
+              example: 2
+            children:
+              type: number
+              example: 1
+
+          
     StripeCheckoutResponse:
       type: object
       properties:

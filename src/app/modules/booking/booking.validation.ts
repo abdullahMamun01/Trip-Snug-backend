@@ -19,4 +19,9 @@ const bookingValidationSchema = z.object({
   }),
 });
 
-export { bookingValidationSchema };
+
+const bookingUpdateValidationSchema = z.object({
+  body: bookingValidationSchema.partial(),
+});
+
+export { bookingValidationSchema,bookingUpdateValidationSchema };

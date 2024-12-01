@@ -13,15 +13,14 @@ import authenticate from '../../middleware/authenticate';
 const router = express.Router();
 router.get(
   '/users',
-
   authoRization(USER_ROLE.admin),
-  userController.getAllUserController,
+  userController.getAllUser,
 );
 
 router.get(
   '/me',
   authenticate,
-  userController.getSingleUserController,
+  userController.getSingleUser,
 );
 
 
@@ -29,14 +28,14 @@ router.patch(
   '/users/:userId/role',
   validateRequest(userRoleSchema),
   authoRization(USER_ROLE.admin),
-  userController.updateUserRoleController,
+  userController.updateUserRole,
 );
 
 router.patch(
   '/users/profile',
   validateRequest(updateUserValidateSchema),
   authoRization(USER_ROLE.user),
-  userController.updateProfileController,
+  userController.updateProfile,
 );
 
 export const userRoutes = router;

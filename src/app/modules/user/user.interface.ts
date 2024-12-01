@@ -14,11 +14,8 @@ export type TUser = {
   image?: string;
   city?: string; // New field
   country?: string; // New field
-  location?: {
-    lat: number;
-    lng: number;
-  }; // New field for geolocation
   dateOfBirth?: Date; // New field
+  currency?:string
 };
 
 export type TLogin = {

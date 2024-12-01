@@ -14,6 +14,11 @@ const paymentSchema = new Schema(
       ref: 'Hotel',
       required: true,
     },
+    booking: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Hotel',
+      required: true,
+    },
     paymentStatus: {
       type: String,
       enum: ['paid', 'unpaid', 'refunded'],

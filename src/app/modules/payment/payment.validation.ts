@@ -57,6 +57,7 @@ export const paymentValidationSchema = z.object({
   ),
 });
 
+
 export const paymentPartialValidationSchema = z.object({
   body: paymentSchema.partial(),
 });

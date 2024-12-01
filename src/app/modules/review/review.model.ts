@@ -36,8 +36,8 @@ const RatingReviewSchema = new Schema<IRatingReview>(
   }
 );
 
-// Indexes for performance and unique constraints
-RatingReviewSchema.index({ hotelId: 1, userId: 1 }, { unique: true }); // Ensures a user can only review a hotel once
-RatingReviewSchema.index({ hotelId: 1, createdAt: -1 }); // Optimizes pagination by hotel and time
+// // Indexes for performance and unique constraints
+// RatingReviewSchema.index({ hotelId: 1, userId: 1 }, { unique: true }); // Ensures a user can only review a hotel once
+// RatingReviewSchema.index({ hotelId: 1, createdAt: -1 }); // Optimizes pagination by hotel and time
 
 export const RatingReviewModel = model('Review', RatingReviewSchema);

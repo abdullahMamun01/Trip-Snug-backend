@@ -65,11 +65,9 @@ const updateProfileToDB = async (userId: string, payload: TUser) => {
   if (!findUser) {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found!');
   }
-  const image = payload.image || findUser.image;
-
   const user = await UserModel.findByIdAndUpdate(
     userId,
-    { ...payload, image },
+    payload,
     {
       new: true,
       runValidators: true,

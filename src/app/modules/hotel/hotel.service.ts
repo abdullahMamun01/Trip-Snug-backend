@@ -28,7 +28,7 @@ const fetchAllHotels = async (query: Record<string, unknown>) => {
   const hotels = await hotelQUery.modelQuery.lean().select('-isDeleted -__v');
   return {
     totalPage: hotelQUery.totalPage,
-    hotels: convertArrayIdToId(hotels),
+    hotels: convertArrayIdToId(hotels).map(hotel => hotel.id),
     hasNextpage: hotelQUery.hasNextPage,
     currentPage: Number(query.page),
     nextPage: hotelQUery.nextPage,

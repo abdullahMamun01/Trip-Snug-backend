@@ -7,7 +7,7 @@ import { uploadImage } from '../../utils/uploadImage';
 import fileUpload from 'express-fileupload';
 import { TUser } from './user.interface';
 
-const signupController = catchAsync(async (req, res) => {
+const signup = catchAsync(async (req, res) => {
   const body = req.body;
   const user = await userService.createUser(body);
   sendResponse(res, {
@@ -18,7 +18,7 @@ const signupController = catchAsync(async (req, res) => {
   });
 });
 
-const updateUserRoleController = catchAsync(async (req, res) => {
+const updateUserRole = catchAsync(async (req, res) => {
   const { role } = req.body;
   const { userId } = req.params;
   if (req?.user?.userId === userId) {
@@ -35,7 +35,7 @@ const updateUserRoleController = catchAsync(async (req, res) => {
   });
 });
 
-const getAllUserController = catchAsync(async (req, res) => {
+const getAllUser = catchAsync(async (req, res) => {
   const users = await userService.getAllUserFromDB(req?.user?.userId as string);
 
   sendResponse(res, {
@@ -46,7 +46,7 @@ const getAllUserController = catchAsync(async (req, res) => {
   });
 });
 
-const getSingleUserController = catchAsync(async (req, res) => {
+const getSingleUser = catchAsync(async (req, res) => {
   const users = await userService.getSingleUserFromDB(
     req?.user?.userId as string,
   );
@@ -58,7 +58,7 @@ const getSingleUserController = catchAsync(async (req, res) => {
   });
 });
 
-const updateProfileController = catchAsync(async (req, res) => {
+const updateProfile = catchAsync(async (req, res) => {
   const file = req.files;
   const payload: TUser = {
     ...req.body,
@@ -82,9 +82,9 @@ const updateProfileController = catchAsync(async (req, res) => {
 });
 
 export const userController = {
-  signupController,
-  updateUserRoleController,
-  getAllUserController,
-  getSingleUserController,
-  updateProfileController,
+  signup,
+  updateUserRole,
+  getAllUser,
+  getSingleUser,
+  updateProfile,
 };

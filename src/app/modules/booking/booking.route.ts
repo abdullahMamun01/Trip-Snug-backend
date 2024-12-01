@@ -4,7 +4,6 @@ import { bookingController } from './booking.controller';
 import { validateRequest } from '../../middleware/validateRequest';
 import {
   bookingUpdateValidationSchema,
-  bookingValidationSchema,
 } from './booking.validation';
 import { authoRization } from '../../middleware/authoRization';
 import { USER_ROLE } from '../user/user.constants';

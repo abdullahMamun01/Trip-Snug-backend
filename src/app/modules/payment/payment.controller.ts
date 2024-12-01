@@ -1,13 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { catchAsync } from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { paymentService } from './payment.service';
-import { IPayment, IPaymentRequest } from './payment.interface';
+import { IPaymentRequest } from './payment.interface';
 import { bookingService } from '../booking/booking.service';
-import mongoose, { Types } from 'mongoose';
 import config from '../../config';
 import stripe from '../../utils/stripe';
 import { HotelModel } from '../hotel/hotel.model';
+import Stripe from 'stripe';
+
+import {
+  getExchangeRate,
+  savePaymentData,
+  validateCheckoutSession,
+} from './payment.utils';
 
 const getAllPayments = catchAsync(async (req: Request, res: Response) => {
   const payments = await paymentService.fetchPayments(req.query);
@@ -21,7 +28,7 @@ const getAllPayments = catchAsync(async (req: Request, res: Response) => {
 
 const getUserPayments = catchAsync(async (req: Request, res: Response) => {
   const payments = await paymentService.fetchUserPayments(
-    req.user?.userId as string,
+    req.user?.userId?.toString() as string,
     req.query,
   );
   sendResponse(res, {
@@ -32,31 +39,30 @@ const getUserPayments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-import Stripe from 'stripe';
-
-const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
-  const {
-    hotel,
-    currency,
-    checkin,
-    checkout,
-    guest,
-    roomsAllocated,
-  }: IPaymentRequest = req.body;
-
-  const reserveBooked = await bookingService.createBooking({
-    checkInDate: checkin,
-    checkOutDate: checkout,
-    currency,
-    hotel,
-    user: req.user?.userId as string,
-    roomsAllocated,
-    guest,
+// cs_test_a1Df0aozCPZEvjDMlUu1QIFgwUUMCdmQdZbiJgXKxATN8Yj5xDU2mZeJNg
+const createBookingForPayment = async (
+  body: IPaymentRequest,
+  userId: string,
+) => {
+  return await bookingService.createBooking({
+    checkInDate: body.checkin,
+    checkOutDate: body.checkout,
+    currency: body.currency,
+    hotel: body.hotel,
+    user: userId,
+    roomsAllocated: body.roomsAllocated,
+    guest: body.guest,
   });
+};
 
-  const findHotel = await HotelModel.findById(reserveBooked.hotel).lean();
-  // Explicitly define the parameters for session creation
-  const sessionParams: Stripe.Checkout.SessionCreateParams = {
+const prepareSessionParams = (
+  booking: any,
+  hotel: any,
+  clientPublicDomain: string,
+  currency: string,
+  amount:number
+): Stripe.Checkout.SessionCreateParams => {
+  return {
     payment_method_types: ['card'],
     mode: 'payment',
     submit_type: 'auto',
@@ -65,20 +71,42 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
         price_data: {
           currency: currency || 'usd',
           product_data: {
-            name: findHotel?.title || 'Hotel Booking',
-            images: findHotel?.images.slice(0, 1) || [],
+            name: hotel?.title || 'Hotel Booking',
+            images: hotel?.images.slice(0, 1) || [],
           },
-          unit_amount: Math.round(reserveBooked.totalPrice * 100),
+          unit_amount:amount * 100,
         },
         quantity: 1,
       },
     ],
-    success_url: `${config.client_public_domain}/payment/success?payment_status=succeeded&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${config.client_public_domain}/payment/failed?payment_status=false`,
+    success_url: `${clientPublicDomain}/payment/success?payment_status=succeeded&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${clientPublicDomain}/payment/failed?payment_status=false`,
     metadata: {
-      bookingId: reserveBooked._id.toString(),
+      bookingId: booking._id.toString(),
     },
   };
+};
+
+const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
+  const body: IPaymentRequest = req.body;
+  const userId = req.user?.userId?.toString() as string;
+
+  const booking = await createBookingForPayment(body, userId);
+  const hotel = await HotelModel.findById(booking.hotel).lean();
+
+  const amount =
+    body.currency === 'usd'
+      ? Math.round(booking.totalPrice)
+      : await getExchangeRate(body.currency) * booking.totalPrice;
+
+
+  const sessionParams = prepareSessionParams(
+    booking,
+    hotel,
+    config.client_public_domain as string,
+    body.currency,
+    Math.floor(amount)
+  );
 
   const session = await stripe.checkout.sessions.create(sessionParams);
 
@@ -86,11 +114,28 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: 200,
     message: 'The stripe payment intent created successfully',
-    data: session.url
+    data: session.url,
   });
 });
 
+const stripeConfirmPayment = catchAsync(async (req: Request, res: Response) => {
+  const { session_id } = req.body;
+  const userId = req.user?.userId?.toString() as string;
+
+  const checkoutSession = await validateCheckoutSession(session_id);
+  const payment = await savePaymentData(checkoutSession, userId , checkoutSession.currency as string);
+
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Payment retrieved successfully',
+    data: payment,
+  });
+});
 
 export const paymentController = {
-  createPaymentIntent
-}
+  createPaymentIntent,
+  stripeConfirmPayment,
+  getAllPayments,
+  getUserPayments,
+};

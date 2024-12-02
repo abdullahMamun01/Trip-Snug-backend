@@ -28,7 +28,7 @@ const fetchAllHotels = async (query: Record<string, unknown>) => {
   const hotels = await hotelQUery.modelQuery.lean().select('-isDeleted -__v');
   return {
     totalPage: hotelQUery.totalPage,
-    hotels: convertArrayIdToId(hotels).map(hotel => hotel.id),
+    hotels: convertArrayIdToId(hotels).map((hotel) => hotel.id),
     hasNextpage: hotelQUery.hasNextPage,
     currentPage: Number(query.page),
     nextPage: hotelQUery.nextPage,
@@ -83,6 +83,20 @@ const deleteHotel = async (hotelId: string) => {
   );
   return deletedHotel;
 };
+const fetchMostRatingHotels = async () => {
+  const mostRatingHotels = await HotelModel.find({ rating: { $gte: 4 } })
+    .sort({ rating: -1 }) // Sort by rating in descending order
+    .limit(10); // Limit to top 10 hotels
+  return mostRatingHotels;
+};
+
+const fetchMostBookingHotels = async () => {
+  const mostRatingHotels = await HotelModel.find()
+    .sort({ reviews: -1 }) // Sort by rating in descending order
+    .limit(10); // Limit to top 10 hotels
+  return mostRatingHotels;
+};
+
 
 export const hotelService = {
   fetchAllHotels,
@@ -91,4 +105,6 @@ export const hotelService = {
   createHotel,
   updateHotel,
   deleteHotel,
+  fetchMostBookingHotels,
+  fetchMostRatingHotels
 };

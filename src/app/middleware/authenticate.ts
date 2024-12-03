@@ -16,15 +16,6 @@ const authenticate = catchAsync(
         'No authorization header provided',
       );
     }
-    const [scheme, token] = authHeader.split(' ');
-
-    if (scheme !== 'Bearer' || !token) {
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        'Invalid Bearer token format',
-      );
-    }
-    
      passport.authenticate(
       'jwt',
       { session: true },

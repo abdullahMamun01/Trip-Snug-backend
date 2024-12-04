@@ -1,11 +1,5 @@
 import { z } from 'zod';
 
-// Define the schema for the availability and bookings objects
-const availabilitySchema = z.object({
-  totalRoom: z.number().int().positive(),
-  availableRoom: z.number().int().positive(),
-});
-
 const bookingSchema = z.object({
   checkin: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: 'Invalid check-in date format',
@@ -25,7 +19,6 @@ const roomSchema = z.object({
   pricePerNight: z.number().positive(),
   maxGuest: z.number().int().positive(),
   amenities: z.array(z.string()).nonempty(),
-  availability: availabilitySchema,
   bookings: z.array(bookingSchema).optional(),
   images: z.array(z.string()).optional(),
 });

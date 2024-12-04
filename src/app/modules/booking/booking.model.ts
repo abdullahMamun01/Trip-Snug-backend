@@ -4,6 +4,7 @@ import { IBooking } from './booking.interface';
 const bookingSchema = new Schema<IBooking>({
   hotel: { type: Schema.Types.ObjectId, ref: 'Hotel', required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  room :  { type: Schema.Types.ObjectId, ref: 'Hotel', required: true } ,
   checkInDate: { type: Date, required: true },
   checkOutDate: { type: Date, required: true },
   totalPrice: { type: Number, required: true },

@@ -11,16 +11,6 @@ const roomSchema = new Schema<IRoom>({
   pricePerNight: { type: Number, required: true },
   maxGuest: { type: Number, required: true },
   amenities: [{ type: String, required: true }],
-  availability: {
-    totalRoom: { type: Number, required: true },
-    availableRoom: { type: Number, required: true },
-  },
-  bookings: [
-    {
-      checkin: { type: Date, required: true },
-      checkout: { type: Date, required: true },
-    },
-  ],
   images: [{ type: String }],
   isDeleted: {
     type:Boolean ,

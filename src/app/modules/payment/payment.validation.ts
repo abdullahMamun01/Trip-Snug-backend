@@ -6,6 +6,9 @@ const paymentSchema = z.object({
   hotel: z
     .string()
     .regex(/^[a-f\d]{24}$/i, { message: 'Invalid hotel ID format' }),
+    room: z
+    .string()
+    .regex(/^[a-f\d]{24}$/i, { message: 'Invalid hotel ID format' }),
   checkin: z
     .string()
     .regex(dateRegex, {

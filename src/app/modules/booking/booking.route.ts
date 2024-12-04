@@ -15,13 +15,10 @@ router.get(
   authoRization(USER_ROLE.admin),
   bookingController.getBookings,
 );
-// router.post(
-//   '/',
-//   authenticate,
-//   authoRization(USER_ROLE.admin),
-//   validateRequest(bookingValidationSchema),
-//   bookingController.createBoking,
-// );
+router.get(
+  '/expire-and-update',
+  bookingController.bookingUpdateStatus,
+);
 
 router.patch(
   '/:bookingId',

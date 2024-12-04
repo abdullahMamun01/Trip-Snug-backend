@@ -1,9 +1,9 @@
-import  { Schema } from "mongoose";
+import  { Schema, Types } from "mongoose";
 
 export interface IBooking  {
     hotel: Schema.Types.ObjectId;
     user: Schema.Types.ObjectId;
-    room?:Schema.Types.ObjectId ;
+    room:Schema.Types.ObjectId ;
     checkInDate: Date;
     checkOutDate: Date;
     duration: number;
@@ -22,6 +22,7 @@ export interface IBooking  {
   export interface IBookingPayload  {
     hotel: Schema.Types.ObjectId;
     user: string;
+    room: Types.ObjectId ,
     checkInDate: Date;
     checkOutDate: Date;
     currency: string;

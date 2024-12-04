@@ -52,6 +52,7 @@ const createBookingForPayment = async (
     user: userId,
     roomsAllocated: body.roomsAllocated,
     guest: body.guest,
+    room: body.room,
   });
 };
 
@@ -60,7 +61,7 @@ const prepareSessionParams = (
   hotel: any,
   clientPublicDomain: string,
   currency: string,
-  amount:number
+  amount: number,
 ): Stripe.Checkout.SessionCreateParams => {
   return {
     payment_method_types: ['card'],
@@ -74,7 +75,7 @@ const prepareSessionParams = (
             name: hotel?.title || 'Hotel Booking',
             images: hotel?.images.slice(0, 1) || [],
           },
-          unit_amount:amount * 100,
+          unit_amount: amount * 100,
         },
         quantity: 1,
       },
@@ -97,15 +98,14 @@ const createPaymentIntent = catchAsync(async (req: Request, res: Response) => {
   const amount =
     body.currency === 'usd'
       ? Math.round(booking.totalPrice)
-      : await getExchangeRate(body.currency) * booking.totalPrice;
-
+      : (await getExchangeRate(body.currency)) * booking.totalPrice;
 
   const sessionParams = prepareSessionParams(
     booking,
     hotel,
     config.client_public_domain as string,
     body.currency,
-    Math.floor(amount)
+    Math.floor(amount),
   );
 
   const session = await stripe.checkout.sessions.create(sessionParams);
@@ -123,7 +123,11 @@ const stripeConfirmPayment = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.userId?.toString() as string;
 
   const checkoutSession = await validateCheckoutSession(session_id);
-  const payment = await savePaymentData(checkoutSession, userId , checkoutSession.currency as string);
+  const payment = await savePaymentData(
+    checkoutSession,
+    userId,
+    checkoutSession.currency as string,
+  );
 
   sendResponse(res, {
     statusCode: 201,
@@ -132,6 +136,8 @@ const stripeConfirmPayment = catchAsync(async (req: Request, res: Response) => {
     data: payment,
   });
 });
+
+
 
 export const paymentController = {
   createPaymentIntent,

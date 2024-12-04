@@ -23,6 +23,7 @@ export interface IPaymentPayload {
 
 export interface IPaymentRequest {
   hotel: Schema.Types.ObjectId;
+  room: Types.ObjectId ;
   checkin: Date;
   checkout: Date;
   guest: {

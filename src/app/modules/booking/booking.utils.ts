@@ -6,5 +6,7 @@ const getDayDifference = (checkIn: Date, checkOut: Date) => {
   const dayDifference = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return dayDifference
 };
-
-export { getDayDifference };
+const calculateTotalPrice = (pricePerNight:number , reserveRoom:number , duration:number) => {
+  return pricePerNight * reserveRoom * duration
+}
+export { getDayDifference ,calculateTotalPrice};

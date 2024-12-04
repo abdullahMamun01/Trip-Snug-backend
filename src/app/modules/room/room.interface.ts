@@ -9,14 +9,6 @@ export interface IRoom  {
     pricePerNight: number;
     maxGuest: number;
     amenities: string[];
-    availability: {
-      totalRoom: number;
-      availableRoom: number;
-    };
-    bookings: {
-      checkin: string;
-      checkout: string;
-    }[];
     images?: string[];
     isDeleted?:boolean
   }

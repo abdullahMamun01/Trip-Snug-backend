@@ -4,7 +4,8 @@ import { HotelModel } from '../hotel/hotel.model';
 import BookingModel from '../booking/booking.model';
 import { IRatingReview } from './review.interface';
 import { RatingReviewModel } from './review.model';
-import QueryBuilder from '../../utils/QueryBuilder';
+import QueryBuilder from '../../builder/QueryBuilder';
+
 
 const updateHotelRating = async (hotelId: string, prevRating: number) => {
   const reviewList = await RatingReviewModel.find({ hotel: hotelId }).lean();

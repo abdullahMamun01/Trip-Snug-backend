@@ -2,10 +2,11 @@
 
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
-import QueryBuilder from '../../utils/QueryBuilder';
+
 import { HotelModel } from './hotel.model';
 import { IHotel } from './hotel.interface';
 import { convertArrayIdToId } from '../../utils';
+import HotelQueryBuilder from '../../builder/HotelQueryBuilder';
 
 const findHotelById = async (hotelId: string) => {
   const hotel = await HotelModel.findById(hotelId).lean();
@@ -19,16 +20,16 @@ const fetchAllHotels = async (query: Record<string, unknown>) => {
   // Logic to fetch all hotels from the database
   const totalItem = await HotelModel.countDocuments();
 
-  const hotelQUery = new QueryBuilder(
-    HotelModel.find(),
+  const hotelQUery = new HotelQueryBuilder(
+    HotelModel.find({availableRooms: {$gt : 0}}),
     query,
     Number(totalItem),
-  ).paginate();
+  ).paginate().search(['title' , 'description']);
 
   const hotels = await hotelQUery.modelQuery.lean().select('-isDeleted -__v');
   return {
     totalPage: hotelQUery.totalPage,
-    hotels: convertArrayIdToId(hotels).map((hotel) => hotel.id),
+    hotels: convertArrayIdToId(hotels),
     hasNextpage: hotelQUery.hasNextPage,
     currentPage: Number(query.page),
     nextPage: hotelQUery.nextPage,

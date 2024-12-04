@@ -1,16 +1,28 @@
 {
     "version": 2,
     "builds": [
-        {
-            "src": "dist/server.js",
-            "use": "@vercel/node"
-
-        }
+      {
+        "src": "dist/server.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "dist/swagger.yaml",
+        "use": "@vercel/static"
+      }
     ],
     "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "dist/server.js"
-        }
+      {
+        "src": "/docs",
+        "dest": "dist/server.js"
+      },
+      {
+        "src": "dist/swagger.yaml",
+        "dest": "dist/swagger.yaml"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "dist/server.js"
+      }
     ]
-}
+  }
+  

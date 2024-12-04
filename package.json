@@ -6,7 +6,7 @@
   "scripts": {
     "start:prod": "node ./dist/server.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+    "build": "tsc && cp src/swagger.yaml dist/swagger.yaml",
     "lint": "eslint src --ignore-path .eslintignore --ext .ts",
     "lint:fix": "npx eslint src --fix",
     "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
@@ -39,7 +39,7 @@
     "passport-google-oauth2": "^0.2.0",
     "passport-jwt": "^4.0.1",
     "stripe": "^17.4.0",
-    "swagger-ui-express": "^5.0.1",
+    "swagger-ui-express": "4.6.2",
     "yamljs": "^0.3.0",
     "zod": "^3.23.8"
   },

@@ -44,14 +44,17 @@ class QueryBuilder<T> {
   }
   search(searchFields: string[]) {
     const searchTerm = this.queryOption.search;
+
     if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
-        $or: searchFields.map((field) => ({
-          [field]: { $regex: searchTerm, $option:'i'  },
-        }) as FilterQuery<T>) ,
+        $or: searchFields.map(
+          (field) =>
+            ({
+              [field]: { $regex: searchTerm, $options: 'i' },
+            }) as FilterQuery<T>,
+        ),
       });
     }
-
     return this;
   }
 }

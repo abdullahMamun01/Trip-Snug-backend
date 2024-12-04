@@ -4,10 +4,11 @@ import { HotelModel } from '../hotel/hotel.model';
 import { IBooking, IBookingPayload } from './booking.interface';
 import BookingModel from './booking.model';
 import { calculateTotalPrice, getDayDifference } from './booking.utils';
-import QueryBuilder from '../../utils/QueryBuilder';
+
 import { convertArrayIdToId } from '../../utils';
 import { isRoomAvailable } from '../room/rooms.utils';
 import RoomModel from '../room/room.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createBooking = async (payload: IBookingPayload) => {
   // Logic to create a booking

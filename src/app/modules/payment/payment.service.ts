@@ -3,8 +3,9 @@ import AppError from '../../error/AppError';
 import { HotelModel } from '../hotel/hotel.model';
 import { IPaymentPayload } from './payment.interface';
 import PaymentModel from './payment.model';
-import QueryBuilder from '../../utils/QueryBuilder';
+
 import BookingModel from '../booking/booking.model';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createPayment = async (payload: IPaymentPayload, bookingId: string) => {
   // Find the booking to validate its existence and status

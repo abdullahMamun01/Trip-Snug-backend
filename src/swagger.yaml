@@ -6,14 +6,11 @@ info:
   version: 1.0.0
   contact:
     name: API Support
-    email: support@travelbookingplatform.com
-    url: https://travelbookingplatform.com/support
-  termsOfService: https://travelbookingplatform.com/terms
+    email: mamun@prayersconnect.com
+    url: abdullah-mamun.vercel.app
 servers:
-  - url: https://api.travelbookingplatform.com/v1
-    description: Production server
-  - url: https://sandbox.travelbookingplatform.com/v1
-    description: Sandbox server
+  - url : https://trip-snug.vercel.app/api/v1
+    description: Production development server
   - url: http://localhost:5500/api/v1
     description: Local development server
     
@@ -27,6 +24,8 @@ tags:
   - name: Review
     description: Endpoints for Reveiw Hotel.
   - name: Payment
+    description: Endpoints for handling payments and transactions via Stripe.
+  - name: Room
     description: Endpoints for handling payments and transactions via Stripe.
   - name: Notification
     description: Endpoints for Sent Notification to user.
@@ -679,6 +678,116 @@ paths:
             example: Hotel Not found
         '500' :
           $ref: '#/components/responses/InternalServerError'
+  /hotels/{hotelId}/rooms:
+    get:
+      tags: [Hotel]
+      summary: Fetch all rooms by hotel ID
+      description: Retrieves all rooms associated with the specified `hotelId`.
+      parameters:
+        - name: hotelId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ObjectId of the hotel for which rooms are being fetched.
+      responses:
+        200:
+          description: Successfully retrieved the rooms.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Room created successfully
+                  data:
+                    type: array
+                    items:
+                      allOf:
+                          - type: object
+                            properties:
+                              id:
+                                type: string
+                                example: 674f4cdcb83d2475dd77f4d0
+                          - $ref: '#/components/schemas/Room'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags: [Hotel]
+      summary: Create a room for a specific hotel
+      description: Creates a new room associated with the provided `hotelId`.
+      parameters:
+        - name: hotelId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ObjectId of the hotel for which the room is being created.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+        
+      responses:
+        201:
+          description: Successfully created the room.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: Room created successfully
+                  data:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 674f4cdcb83d2475dd77f4d0
+                        - $ref: '#/components/schemas/Room'  
+                
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Title required
+                        message: 
+                          type: string
+                          example: Required
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
   /reviews/{reviewId}:
     patch:
       summary: Update Review 
@@ -994,7 +1103,7 @@ paths:
             example: Hotel Not found
         '500' :
           $ref: '#/components/responses/InternalServerError'       
-  /payments/stripe/create-intent:
+  /payments/stripe/create-payment-intent:
     post:
       summary: Create a Stripe Payment Intent
       tags: [Payment]
@@ -1112,7 +1221,123 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-          
+  /room/{roomId}:
+    patch:
+      summary: Update a room
+      tags: [Room]
+      description: Updates the details of a room by its `roomId`.
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ObjectId of the room to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        200:
+          description: Successfully retrieve the room list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Room updated successfully
+                  data:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 674f4cdcb83d2475dd77f4d0
+                        - $ref: '#/components/schemas/Room'
+                          
+              
+                
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Title required
+                        message: 
+                          type: string
+                          example: Required
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete a room
+      tags: [Room]
+      description: Deletes a room by its `roomId`.
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ObjectId of the room to delete.
+      responses:
+        200:
+          description: Successfully retrieve the room list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Room deleted successfully
+                  data:
+                      allOf:
+                        - type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 674f4cdcb83d2475dd77f4d0
+                        - $ref: '#/components/schemas/Room'
+                        - type: object
+                          properties:
+                            isDeleted:
+                              type: boolean
+                              example: true
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500 :
+          $ref: '#/components/responses/InternalServerError'  
   /notification:
     get:
       summary: Retrieve Booking Confirmation Notifications
@@ -1648,27 +1873,23 @@ components:
         - amount
         - currency
       properties:
-        user:
-          type: string
-          description: Unique identifier for the user.
-          example: "64bfc2f894ad3c001c8e5a7b"
         hotel:
           type: string
           description: Unique identifier for the hotel.
           example: "64bfc2f894ad3c001c8e5a79"
-        amount:
-          type: number
-          description: Amount to be paid.
-          example: 200.00
+        room:
+          type: string
+          description: Unique identifier of room.
+          example: "64bfc2f894ad3c001c8e5a78"
         currency:
           type: string
           description: Currency of the payment.
           example: "USD"
-        checkInDate:
+        checkIn:
           type: string
           format: date
           example: "2024-12-01"
-        checkOutDate:
+        checkOut:
           type: string
           format: date
           example: "2024-12-10"
@@ -1681,7 +1902,48 @@ components:
             children:
               type: number
               example: 1
-
+    Room:
+      type: object
+      properties:
+        hotel:
+          type: string
+          description: The ObjectId of the hotel.
+          example: 674f4cdcb83d2475dd77f4d7
+        title:
+          type: string
+          description: Title of the room.
+          example: Executive Suite
+        description:
+          type: string
+          description: Description of the room.
+          example: Premium suite with luxurious furnishings, a private balcony, and breathtaking ocean views
+        roomType:
+          type: string
+          description: The type of the room (e.g., Single, Double, Suite).
+          example: Suite
+        roomNo:
+          type: string
+          description: The room number (optional).
+          example: 401
+        pricePerNight:
+          type: number
+          description: Price per night for the room.
+          example: 100
+        maxGuest:
+          type: number
+          description: Maximum number of guests allowed.
+          example: 2
+        amenities:
+          type: array
+          items:
+            type: string
+          description: List of amenities in the room.
+          example: ["Free Wi-Fi","Private Balcony","Ocean View","Flat-screen TV","Coffee Maker"]
+        images:
+          type: array
+          items:
+            type: string
+          description: URLs of room images (optional).
           
     StripeCheckoutResponse:
       type: object

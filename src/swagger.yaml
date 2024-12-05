@@ -722,6 +722,8 @@ paths:
     post:
       tags: [Hotel]
       summary: Create a room for a specific hotel
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Creates a new room associated with the provided `hotelId`.
       parameters:
         - name: hotelId
@@ -979,6 +981,8 @@ paths:
     delete:
       summary: Delete Booking by id
       tags : [Booking]
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Delete a Booking info by passing Booking Id
       parameters:
         - name: bookingId
@@ -1107,6 +1111,8 @@ paths:
     post:
       summary: Create a Stripe Payment Intent
       tags: [Payment]
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Initiate a payment intent using Stripe for online payments.
       requestBody:
         required: true
@@ -1187,6 +1193,8 @@ paths:
     post:
       summary: Create a Cash on Arrival Payment
       tags: [Payment]
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Record a cash-on-arrival payment for a hotel booking.
       requestBody:
         required: true
@@ -1225,6 +1233,8 @@ paths:
     patch:
       summary: Update a room
       tags: [Room]
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Updates the details of a room by its `roomId`.
       parameters:
         - name: roomId
@@ -1296,6 +1306,8 @@ paths:
     delete:
       summary: Delete a room
       tags: [Room]
+      security: # Apply security to this endpoint
+        - BearerAuth: []
       description: Deletes a room by its `roomId`.
       parameters:
         - name: roomId

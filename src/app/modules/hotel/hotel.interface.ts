@@ -17,8 +17,8 @@ export interface IHotel {
   amenities: string[];
   tags: string[];
   currency: string;
-  rating:number ,
-  reviews:number,
+  rating?:number ,
+  reviews?:number,
   discount?: {
     percentage: number;
     description?: string;

@@ -10,6 +10,8 @@ import { roomValidationSchema } from '../room/room.validation';
 const router = express.Router();
 router.get('/', hotelController.getAllHotels);
 router.get('/:hotelId/related', hotelController.getRelatedHotels);
+router.get('/recent' , hotelController.recentHotel)
+router.get('/top-rated' , hotelController.mostRatingHotel)
 
 router.post(
   '/',
@@ -31,6 +33,7 @@ router.delete(
 );
 //fetch all hotel rooms by hotel id
 router.get('/:hotelId/rooms', roomController.getAllRooms);
+
 //create room by passing hotel id
 router.post(
   '/:hotelId/rooms',

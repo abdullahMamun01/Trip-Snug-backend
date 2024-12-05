@@ -71,10 +71,12 @@ const hotelSchema = new Schema<IHotel>(
       min: [0, 'Rating cannot be less than 0'], // Ensure it is >= 0
       max: [5, 'Rating cannot be more than 5'], // Ensure it is <= 5
       default: 0,
+      
     },
     reviews: {
       type: Number,
       default: 0,
+      required:false
     },
 
     classification: {

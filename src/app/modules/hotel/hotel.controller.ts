@@ -95,6 +95,26 @@ const getRelatedHotels = catchAsync(async (req: Request, res: Response) => {
     data: deletedHotel,
   });
 });
+
+const recentHotel = catchAsync(async (req: Request, res: Response) => {
+  const hotels = await hotelService.fetchRecentHotel();
+  sendResponse(res, {
+    success: true,
+    message: 'Hotel retrieve successfully',
+    statusCode: httpStatus.OK,
+    data: hotels,
+  });
+});
+
+const mostRatingHotel = catchAsync(async (req: Request, res: Response) => {
+  const hotels = await hotelService.fetchMostRatingHotels();
+  sendResponse(res, {
+    success: true,
+    message: 'Hotel retrieve successfully',
+    statusCode: httpStatus.OK,
+    data: hotels,
+  });
+});
 export const hotelController = {
   getAllHotels,
   getHotel,
@@ -102,4 +122,6 @@ export const hotelController = {
   createHotel,
   updateHotel,
   deleteHotel,
+  recentHotel,
+  mostRatingHotel
 };

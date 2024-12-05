@@ -49,7 +49,7 @@ const fetchRelatedHotels = async (hotelId: string) => {
   if (!hotel) throw new AppError(httpStatus.NOT_FOUND, 'The Hotel not found');
   const relatedHotel = await HotelModel.find({
     $or: [{ location: hotel.location }, { tags: { $in: hotel.tags } }],
-  }).limit(10); // Limit to 10 results
+  }).limit(10).select('-reviews'); // Limit to 10 results
   return relatedHotel;
 };
 
@@ -58,6 +58,11 @@ const createHotel = async (hotelData: IHotel) => {
   const hotel = await HotelModel.create(hotelData);
   return hotel;
 };
+
+const fetchRecentHotel  = async () => {
+  const hotels = await HotelModel.find({}).sort('-createdAt').limit(10).lean()
+  return convertArrayIdToId(hotels)
+}
 
 const updateHotel = async (hotelId: string, payload: Partial<IHotel>) => {
   const hotel = await HotelModel.findById(hotelId).lean();
@@ -107,5 +112,6 @@ export const hotelService = {
   updateHotel,
   deleteHotel,
   fetchMostBookingHotels,
-  fetchMostRatingHotels
+  fetchMostRatingHotels,
+  fetchRecentHotel
 };

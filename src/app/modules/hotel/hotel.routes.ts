@@ -9,9 +9,10 @@ import { roomValidationSchema } from '../room/room.validation';
 
 const router = express.Router();
 router.get('/', hotelController.getAllHotels);
-router.get('/:hotelId/related', hotelController.getRelatedHotels);
 router.get('/recent' , hotelController.recentHotel)
 router.get('/top-rated' , hotelController.mostRatingHotel)
+router.get('/:hotelId', hotelController.getHotel);
+router.get('/:hotelId/related', hotelController.getRelatedHotels);
 
 router.post(
   '/',

@@ -13,12 +13,11 @@ class HotelQueryBuilder<T> extends QueryBuilder<T> {
     const { minPrice, maxPrice, rating, category, country, city, currency , amenities
     } =
       this.queryOption;
-
     if (minPrice || maxPrice) {
       this.modelQuery = this.modelQuery.find({
         pricePerNight: {
           ...(minPrice ? { $gte: Number(minPrice) } : {}),
-          ...(maxPrice ? { $gte: Number(maxPrice) } : {}),
+          ...(maxPrice ? { $lte: Number(maxPrice) } : {}),
         },
       });
     }
@@ -45,6 +44,7 @@ class HotelQueryBuilder<T> extends QueryBuilder<T> {
       });
     }
     if (city) {
+      
       this.modelQuery = this.modelQuery.find({
         'location.city': city,
       });
@@ -59,6 +59,7 @@ class HotelQueryBuilder<T> extends QueryBuilder<T> {
             amenities : {$in : amenities}
         })
     }
+    return this
   }
 }
 

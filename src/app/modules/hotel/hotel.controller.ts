@@ -25,12 +25,13 @@ const getAllHotels = catchAsync(async (req: Request, res: Response) => {
 });
 const getHotel = catchAsync(async (req: Request, res: Response) => {
   const hotleId = req.params.hotelId;
-  const hotels = await hotelService.fetchHotelById(hotleId);
+
+  const hotel = await hotelService.fetchHotelById(hotleId);
   sendResponse(res, {
     success: true,
     message: 'Hotel retrieve successfully',
     statusCode: httpStatus.OK,
-    data: hotels,
+    data: hotel,
   });
 });
 

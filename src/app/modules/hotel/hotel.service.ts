@@ -5,7 +5,7 @@ import AppError from '../../error/AppError';
 
 import { HotelModel } from './hotel.model';
 import { IHotel } from './hotel.interface';
-import { convertArrayIdToId } from '../../utils';
+import { convertArrayIdToId, convertObjectIdToId } from '../../utils';
 import HotelQueryBuilder from '../../builder/HotelQueryBuilder';
 
 const findHotelById = async (hotelId: string) => {
@@ -24,7 +24,7 @@ const fetchAllHotels = async (query: Record<string, unknown>) => {
     HotelModel.find({availableRooms: {$gt : 0}}),
     query,
     Number(totalItem),
-  ).paginate().search(['title' , 'description']);
+  ).search(['title' , 'description']).filter().paginate();
 
   const hotels = await hotelQUery.modelQuery.lean().select('-isDeleted -__v');
   return {
@@ -41,7 +41,7 @@ const fetchHotelById = async (hotelId: string) => {
   // Logic to fetch a hotel by its ID
   const hotel = await findHotelById(hotelId);
   if (!hotel) throw new AppError(httpStatus.NOT_FOUND, 'The Hotel not found');
-  return hotel;
+  return convertObjectIdToId(hotel);
 };
 
 const fetchRelatedHotels = async (hotelId: string) => {
@@ -49,18 +49,19 @@ const fetchRelatedHotels = async (hotelId: string) => {
   if (!hotel) throw new AppError(httpStatus.NOT_FOUND, 'The Hotel not found');
   const relatedHotel = await HotelModel.find({
     $or: [{ location: hotel.location }, { tags: { $in: hotel.tags } }],
-  }).limit(10).select('-reviews'); // Limit to 10 results
-  return relatedHotel;
+  }).limit(10).select('-reviews').lean(); // Limit to 10 results
+  return convertArrayIdToId(relatedHotel);
 };
 
 const createHotel = async (hotelData: IHotel) => {
   // Logic to create a new hotel in the database
   const hotel = await HotelModel.create(hotelData);
-  return hotel;
+  return convertObjectIdToId(hotel);
 };
 
 const fetchRecentHotel  = async () => {
   const hotels = await HotelModel.find({}).sort('-createdAt').limit(10).lean()
+  
   return convertArrayIdToId(hotels)
 }
 
@@ -86,21 +87,24 @@ const deleteHotel = async (hotelId: string) => {
     hotelId,
     { isDeleted: true },
     { runValidators: true, new: true },
-  );
-  return deletedHotel;
+  ).lean();
+  return convertObjectIdToId(deletedHotel);
 };
 const fetchMostRatingHotels = async () => {
+
   const mostRatingHotels = await HotelModel.find({ rating: { $gte: 4 } })
     .sort({ rating: -1 }) // Sort by rating in descending order
-    .limit(10); // Limit to top 10 hotels
-  return mostRatingHotels;
+    .limit(10).lean(); // Limit to top 10 hotels
+
+  return convertArrayIdToId(mostRatingHotels);
 };
 
 const fetchMostBookingHotels = async () => {
+
   const mostRatingHotels = await HotelModel.find()
     .sort({ reviews: -1 }) // Sort by rating in descending order
-    .limit(10); // Limit to top 10 hotels
-  return mostRatingHotels;
+    .limit(10).select('-v').lean(); // Limit to top 10 hotels
+  return convertArrayIdToId(mostRatingHotels);
 };
 
 

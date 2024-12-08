@@ -3,10 +3,11 @@ import AppError from '../../error/AppError';
 import { HotelModel } from '../hotel/hotel.model';
 import RoomModel from './room.model';
 import { IRoom } from './room.interface';
+import { convertArrayIdToId, convertObjectIdToId } from '../../utils';
 
 const fetchRooms = async (hotelId: string) => {
-  const rooms = await RoomModel.find({ hotel: hotelId });
-  return rooms;
+  const rooms = await RoomModel.find({ hotel: hotelId }).lean();
+  return convertArrayIdToId(rooms);
 };
 
 const createRoom = async (payload: IRoom) => {
@@ -18,7 +19,7 @@ const createRoom = async (payload: IRoom) => {
     );
   }
   const room = await RoomModel.create(payload);
-  return room;
+  return convertObjectIdToId(room);
 };
 
 const updateRoom = async (roomId: string, payload: Partial<IRoom>) => {

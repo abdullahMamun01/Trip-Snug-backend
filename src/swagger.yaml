@@ -296,9 +296,28 @@ paths:
           schema:
             type: number
             format: float
+        - name: checkIn
+          in: query
+          description: Give a starting date.
+          required: false
+          schema:
+            type: string
+        - name: checkOut
+          in: query
+          description: Give a end date.
+          required: false
+          schema:
+            type: string
         - name: city
           in: query
           description: Filter hotels by city.
+          required: false
+          schema:
+            type: string
+
+        - name: country
+          in: query
+          description: Filter hotels by cicountry.
           required: false
           schema:
             type: string
@@ -991,8 +1010,6 @@ paths:
           description: The unique identifier of the booking.
           schema:
             type: string
-      security: # Apply security to this endpoint
-        - BearerAuth: []
       responses:
         '200':
           description: Booking deleted successfully.

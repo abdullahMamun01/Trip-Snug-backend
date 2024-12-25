@@ -10,7 +10,7 @@ export interface IBooking  {
     totalPrice: number;
     currency: string;
     roomsAllocated:number ,
-    status: 'pending' | 'confirmed' | 'canceled' | 'completed';
+    status: 'pending' | 'confirmed' | "inProgress" | 'canceled' | 'completed';
     guest: {
       children: number;
       adults: number;

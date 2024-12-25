@@ -5,11 +5,23 @@ import { TUser } from './user.interface';
 import UserModel from './user.model';
 import { findUserByEmail } from './user.utils';
 import { USER_ROLE } from './user.constants';
+import { convertArrayIdToId, convertObjectIdToId } from '../../utils';
+import QueryBuilder from '../../builder/QueryBuilder';
 
-const getAllUserFromDB = async (adminId: string) => {
-  const users = await UserModel.find({ _id: { $ne: adminId } });
+const getAllUserFromDB = async (
+  adminId: string,
+  query: Record<string, unknown>,
+) => {
+  const totleDoc = await UserModel.countDocuments({ _id: { $ne: adminId } });
 
-  return users;
+  const userBuilder = new QueryBuilder(
+    UserModel.find({ _id: { $ne: adminId } }),
+    query,
+    Number(totleDoc),
+  ).paginate();
+  const users = await userBuilder.modelQuery.lean();
+
+  return convertArrayIdToId(users);
 };
 
 const getSingleUserFromDB = async (userId: string) => {
@@ -37,7 +49,7 @@ const createUser = async (payload: TUser) => {
 
   // eslint-disable-next-line no-unused-vars
   const { password, ...res } = userObject;
-  return res;
+  return convertObjectIdToId(res);
 };
 
 const updateUserRoleToDB = async (payload: {
@@ -65,14 +77,10 @@ const updateProfileToDB = async (userId: string, payload: TUser) => {
   if (!findUser) {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found!');
   }
-  const user = await UserModel.findByIdAndUpdate(
-    userId,
-    payload,
-    {
-      new: true,
-      runValidators: true,
-    },
-  );
+  const user = await UserModel.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  });
 
   return user;
 };

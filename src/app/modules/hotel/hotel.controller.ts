@@ -4,7 +4,7 @@ import { hotelService } from './hotel.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
-import { uploadImage, uploadImageByUrls } from '../../utils/uploadImage';
+import { uploadImage } from '../../utils/uploadImage';
 
 /* 
 catchAsync(async (req:Request, res:Response) => {
@@ -36,22 +36,24 @@ const getHotel = catchAsync(async (req: Request, res: Response) => {
 });
 
 const createHotel = catchAsync(async (req: Request, res: Response) => {
+  // console.log(req.body , 'from controller')
   const file = req.files;
   const imageUrls = req.body.images;
 
-  if ( imageUrls.length === 0 && !file)
-    throw new AppError(
-      httpStatus.UNPROCESSABLE_ENTITY,
-      'Hotel images required',
-    );
+  // if ( imageUrls.length === 0 && !file)
+  //   throw new AppError(
+  //     httpStatus.UNPROCESSABLE_ENTITY,
+  //     'Hotel images required',
+  //   );
+
+
 
   let hotelImages : string [] = [] 
   if(file){
+
     hotelImages = await uploadImage(file);
   }
-  if(imageUrls) {
-    hotelImages = await uploadImageByUrls(imageUrls);
-  }
+
 
   const body = req.body;
   const hotel = await hotelService.createHotel({

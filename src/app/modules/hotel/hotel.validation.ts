@@ -1,10 +1,10 @@
+/* eslint-disable no-useless-escape */
 import { z } from 'zod';
 
 export const hotelValidateSchema = z.object({
   body: z.object({
     title: z.string(),
     description: z.string(),
-    images: z.array(z.string().url()), // Assuming URLs for images
     location: z.object({
       country: z.string(),
       city: z.string(),
@@ -13,9 +13,19 @@ export const hotelValidateSchema = z.object({
       latitude: z.number(),
       longitude: z.number(),
     }),
-    contactInfo: z.string().regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number'),
-    pricePerNight: z.number().positive(),
-    availableRooms: z.number().int().nonnegative(),
+    contactInfo: z.string().regex(/^\+?(\d{1,3})?[\s\-]?\(?\d{1,4}?\)?[\s\-]?\d{1,4}[\s\-]?\d{1,4}$/, 'Invalid phone number'),
+    pricePerNight: z
+    .string()
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'Price per night must be a positive number.',
+    }),
+    availableRooms: z
+    .string()
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'Price per night must be a positive number.',
+    }),
     amenities: z.array(z.string()),
     tags: z.array(z.string()),
     currency: z.string(),
@@ -26,3 +36,25 @@ export const hotelValidateSchema = z.object({
     }),
   }),
 });
+
+
+export const hotelUpdateSchema  = z.object({
+  body: hotelValidateSchema.partial(),
+});
+
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+// Schema for hotel-specific room  query
+export const hotelRoomQuerySchema = z.object({
+  query: z.object({
+    checkIn: z
+      .string()
+      .refine((val) => dateRegex.test(val), {
+        message: "Invalid checkIn date format. Please use 'yyyy-MM-dd'.",
+      }),
+    checkOut: z
+      .string()
+      .refine((val) => dateRegex.test(val), {
+        message: "Invalid checkOut date format. Please use 'yyyy-MM-dd'.",
+      }),
+  })
+})

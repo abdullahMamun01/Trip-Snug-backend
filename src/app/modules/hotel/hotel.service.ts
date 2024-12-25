@@ -8,7 +8,9 @@ import { IHotel } from './hotel.interface';
 import { convertArrayIdToId, convertObjectIdToId } from '../../utils';
 import HotelQueryBuilder from '../../builder/HotelQueryBuilder';
 
+
 const findHotelById = async (hotelId: string) => {
+
   const hotel = await HotelModel.findById(hotelId).lean();
   if (!hotel) {
     throw new AppError(httpStatus.NOT_FOUND, 'The Hotel not found');
@@ -21,7 +23,7 @@ const fetchAllHotels = async (query: Record<string, unknown>) => {
   const totalItem = await HotelModel.countDocuments();
 
   const hotelQUery = new HotelQueryBuilder(
-    HotelModel.find({availableRooms: {$gt : 0}}),
+    HotelModel.find({availableRooms: {$gt : 0} , isDeleted: false}),
     query,
     Number(totalItem),
   ).search(['title' , 'description']).filter().paginate();

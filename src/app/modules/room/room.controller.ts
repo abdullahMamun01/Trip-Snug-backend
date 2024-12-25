@@ -5,7 +5,8 @@ import sendResponse from '../../utils/sendResponse';
 
 const getAllRooms = catchAsync(async (req: Request, res: Response) => {
   const hotelId = req.params.hotelId;
-  const rooms = await roomService.fetchRooms(hotelId);
+
+  const rooms = await roomService.fetchRooms(hotelId , req.query);
   sendResponse(res, {
     statusCode: 200,
     success: true,

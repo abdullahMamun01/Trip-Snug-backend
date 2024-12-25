@@ -4,7 +4,7 @@ import { IBooking } from './booking.interface';
 const bookingSchema = new Schema<IBooking>({
   hotel: { type: Schema.Types.ObjectId, ref: 'Hotel', required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  room :  { type: Schema.Types.ObjectId, ref: 'Hotel', required: true } ,
+  room :  { type: Schema.Types.ObjectId, ref: 'Room', required: true } ,
   checkInDate: { type: Date, required: true },
   checkOutDate: { type: Date, required: true },
   totalPrice: { type: Number, required: true },
@@ -13,7 +13,7 @@ const bookingSchema = new Schema<IBooking>({
   duration: { type: Number, required: true },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'canceled', 'completed'],
+    enum: ['pending' , 'confirmed' , 'inProgress', 'canceled', 'completed'],
     default: 'pending',
   },
   guest: {

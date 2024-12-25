@@ -9,6 +9,7 @@ import { convertArrayIdToId } from '../../utils';
 import { isRoomAvailable } from '../room/rooms.utils';
 import RoomModel from '../room/room.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { formatDate } from './booking.validation';
 
 const createBooking = async (payload: IBookingPayload) => {
   // Logic to create a booking
@@ -71,7 +72,31 @@ const fetchBookings = async (query: Record<string, unknown>) => {
   const totalBookings = await BookingModel.countDocuments().lean();
   // Logic to get a list of bookings
   const bookingBuilder = new QueryBuilder(
-    BookingModel.find(),
+    BookingModel.find().populate([
+      { path: 'hotel', select: '-_id title' },
+      { path: 'user', select: '-_id firstName lastName' },
+      { path: 'room', select: '-_id title' },
+    ]).select('-guest -createdAt -updatedAt -isDeleted').sort('-checkInDate'),
+    query,
+    totalBookings,
+  ).paginate();
+  const bookings = await bookingBuilder.modelQuery.lean();
+  return convertArrayIdToId(bookings);
+};
+
+const fetchUserBookings = async (
+  userId: string,
+  query: Record<string, unknown>,
+) => {
+  const totalBookings = await BookingModel.countDocuments().lean();
+  // Logic to get a list of bookings
+  const bookingBuilder = new QueryBuilder(
+    BookingModel.find({
+      user: userId,
+    })
+      .select('-user -isDeleted -createdAt -updatedAt')
+      .sort('-createdAt')
+      .populate('room', 'title -_id'),
     query,
     totalBookings,
   ).paginate();
@@ -115,28 +140,49 @@ const deleteBooking = async (bookingId: string) => {
 };
 
 const bookingStatusUpdater = async () => {
-  const bookings = await BookingModel.find({
-    status: 'confirmed' ,
+  const todayUTC = new Date(formatDate(new Date())).toISOString();
+
+  const completedBookings = await BookingModel.find({
+    status: 'inProgress',
     checkOutDate: { $lt: new Date() },
   }).lean();
-  const updatePromises = bookings.map((booking) => [
-    // Update booking status to 'completed'
+
+  const ongoingBookings = await BookingModel.find({
+    status: 'confirmed',
+    checkInDate: { $lte: todayUTC },
+    checkOutDate: { $gte: todayUTC },
+  }).lean();
+
+  const updateOngoingBookings = ongoingBookings.map(async (booking) => 
+    BookingModel.findByIdAndUpdate(
+      booking._id,
+      { status: 'inProgress' },
+      { new: true, runValidators: true }
+    )
+  );
+
+  const updateCompletedBookings = completedBookings.map((booking) => [
+
     BookingModel.findByIdAndUpdate(
       booking._id,
       { status: 'completed' },
-      { new: true, runValidators: true },
+      { new: true, runValidators: true }
     ),
-    // Update hotel available rooms
+
     HotelModel.findByIdAndUpdate(
       booking.hotel,
       { $inc: { availableRooms: booking.roomsAllocated } },
-      { new: true, runValidators: true },
+      { new: true, runValidators: true }
     ),
   ]);
 
-  // Flatten the promises and execute them in parallel with Promise.all
-  await Promise.all(updatePromises.flat());
+  // Execute all update promises in parallel
+  await Promise.all([
+    ...updateOngoingBookings,
+    ...updateCompletedBookings.flat(),  // Flattening the array of promises for completed bookings
+  ]);
 };
+
 
 export const bookingService = {
   createBooking,
@@ -144,4 +190,5 @@ export const bookingService = {
   updateBooking,
   deleteBooking,
   bookingStatusUpdater,
+  fetchUserBookings,
 };

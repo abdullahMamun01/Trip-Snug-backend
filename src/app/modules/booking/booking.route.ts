@@ -15,6 +15,14 @@ router.get(
   authoRization(USER_ROLE.admin),
   bookingController.getBookings,
 );
+
+router.get(
+  '/user',
+  authenticate,
+  authoRization(USER_ROLE.user),
+  bookingController.getUserBookings,
+);
+
 router.get(
   '/expire-and-update',
   bookingController.bookingUpdateStatus,

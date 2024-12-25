@@ -52,7 +52,7 @@ const userSchema = new Schema<TUser>(
     },
     address: {
       type: String,
-      required: true,
+      required: false,
     },
     city: {
       type: String,
@@ -60,6 +60,11 @@ const userSchema = new Schema<TUser>(
     },
     country: {
       type: String,
+      required: false,
+    },
+    gender: {
+      type: String,
+      enum : ['male' , 'female','other'] ,
       required: false,
     },
     dateOfBirth: {

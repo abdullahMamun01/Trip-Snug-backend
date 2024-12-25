@@ -24,7 +24,7 @@ export const uploadImage = async (file: fileUpload.FileArray) => {
     });
 
     const uploadPromise = await Promise.all(fileAsync);
-    const data = uploadPromise.map((image) => image.public_id);
+    const data = uploadPromise.map((image) => image.secure_url);
     return data;
   } catch (error) {
     throw new AppError(httpStatus.BAD_REQUEST , "somethin happen occured in filed upload or cloudinary imae upload")

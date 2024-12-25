@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 const RatingReviewSchema = z.object({
-  hotel: z.string({ message: 'Invalid hotel ID' }),
   rating: z
     .number()
     .min(1, { message: 'Rating must be at least 1' })

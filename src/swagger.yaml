@@ -99,6 +99,27 @@ paths:
                       city: 
                         type: string
                         example: New York, NY
+        400:
+          description: Validation Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type : string
+                    example: Validation Error.
+                  errorSources:
+                    type: array
+                    items: # Define the structure of each item in the array
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          example: Email required
+                        message: 
+                          type: string
+                          example: Required
         409 :
           description: User successfully registered
           content:
@@ -709,6 +730,20 @@ paths:
           schema:
             type: string
           description: The ObjectId of the hotel for which rooms are being fetched.
+        - name: checkIn
+          in: query
+          description: The start date of the desired stay for room availability check. Should be provided in the query string.
+          required: true
+          schema:
+            type: string
+            example: "2024-12-12"
+        - name: checkOut
+          in: query
+          description: The end date of the desired stay for room availability check. Should be provided in the query string.
+          required: true
+          schema:
+            type: string
+            example: "2024-12-17"
       responses:
         200:
           description: Successfully retrieved the rooms.
@@ -1744,19 +1779,9 @@ components:
     HotelReviewRequest:
       type: object
       required:
-        - hotelId
-        - userId
         - ratings
         - review
       properties:
-        hotelId:
-          type: string
-          description: The unique identifier of the hotel being reviewed.
-          example: "64bfc2f894ad3c001c8e5a79"
-        userId:
-          type: string
-          description: The unique identifier of the user submitting the review.
-          example: "64bfc2f894ad3c001c8e5a7b"
         ratings:
           type: integer
           description: Rating for the hotel (1-5).
@@ -1931,6 +1956,9 @@ components:
             children:
               type: number
               example: 1
+        roomsAllocated:
+          type: number
+          example: 1
     Room:
       type: object
       properties:

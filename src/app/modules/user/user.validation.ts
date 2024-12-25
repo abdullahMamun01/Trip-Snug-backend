@@ -14,7 +14,6 @@ const userSchmea = z.object({
     }),
   password: z.string({ required_error: 'Password is required!' }),
   role: z.enum(['user', 'admin']).default('user'),
-  address: z.string({ required_error: 'Address is required' }),
   city: z.string({ required_error: 'City is required' }).optional(), // Optional field
   country: z.string({ required_error: 'Country is required' }).optional(), // Optional field
 
@@ -35,6 +34,14 @@ const userSchmea = z.object({
       { message: 'Invalid date format. Use a valid ISO date string.' },
     )
     .optional(), // Optional field
+  phone: z
+    .string()
+    .regex(
+      /^(?:\+?[1-9]{1,4}[.\- ]?)?(?:\(?\d{1,4}\)?[.\- ]?)?[\d.\- ]{3,15}$/,
+      { message: 'Invalid phone number format' },
+    )
+    .optional(),
+    gender: z.enum(['male', 'female', 'other']).optional()
 });
 
 const userRegisterValidationSchema = z.object({

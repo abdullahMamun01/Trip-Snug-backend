@@ -36,7 +36,7 @@ const updateUserRole = catchAsync(async (req, res) => {
 });
 
 const getAllUser = catchAsync(async (req, res) => {
-  const users = await userService.getAllUserFromDB(req?.user?.userId as string);
+  const users = await userService.getAllUserFromDB(req?.user?.userId as string , req.query) ;
 
   sendResponse(res, {
     success: true,

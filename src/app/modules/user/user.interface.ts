@@ -2,11 +2,13 @@ import { USER_ROLE } from './user.constants';
 
 export type TUser = {
   userId?: string;
+  id?:string ;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   phone?: string;
+  gender?:'male' | 'female' |'other';
   isOAuthUser?: boolean;
   role: 'user' | 'admin';
   oauthProvider?: string;

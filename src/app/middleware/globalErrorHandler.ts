@@ -25,7 +25,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
       message: 'Something went wrong',
     },
   ];
-
+  // console.log(err)
   if (err instanceof AppError) {
     statusCode = err?.statusCode;
     message = err?.message;

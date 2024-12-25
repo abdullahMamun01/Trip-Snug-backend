@@ -46,7 +46,7 @@ const loginUser = async (payload: TLogin) => {
 
   const { password, ...remainingField } = user;
   return {
-    user: remainingField,
+    user: convertObjectIdToId(remainingField),
     token: accessToken,
     refreshToken,
   };
